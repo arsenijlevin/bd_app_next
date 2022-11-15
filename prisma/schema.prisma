@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model departments {
+  id      Int       @id @unique(map: "id_UNIQUE") @default(autoincrement()) @db.UnsignedInt
+  title   String    @db.VarChar(45)
+  floor   Int
+  doctors doctors[]
+}
+
+model doctors {
+  id                Int                 @id @unique(map: "id_UNIQUE") @default(autoincrement()) @db.UnsignedInt
+  specialty_id      Int                 @db.UnsignedInt
+  department_id     Int                 @db.UnsignedInt
+  salary            Decimal             @db.Decimal(15, 2)
+  name              String              @db.VarChar(255)
+  surname           String              @db.VarChar(255)
+  patronymic        String?             @db.VarChar(255)
+  departments       departments         @relation(fields: [department_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "department_id")
+  specialties       specialties         @relation(fields: [specialty_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "specialty_id")
+  rendered_services rendered_services[]
+
+  @@index([department_id], map: "department_id_idx")
+  @@index([specialty_id], map: "specialty_id_idx")
+}
+
+model patients {
+  id                Int                 @id @unique(map: "id_UNIQUE") @default(autoincrement()) @db.UnsignedInt
+  email             String              @db.VarChar(255)
+  name              String              @db.VarChar(255)
+  surname           String              @db.VarChar(255)
+  patronymic        String?             @db.VarChar(255)
+  birthday          DateTime            @db.Date
+  gender            String              @db.VarChar(255)
+  phone_number      String              @db.VarChar(255)
+  rendered_services rendered_services[]
+}
+
+model rendered_services {
+  date_time  DateTime @db.DateTime(0)
+  doctor_id  Int      @db.UnsignedInt
+  patient_id Int      @db.UnsignedInt
+  service_id Int      @db.UnsignedInt
+  result     String   @db.Text
+  doctors    doctors  @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "doctor_id")
+  patients   patients @relation(fields: [patient_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "patient_id")
+  services   services @relation(fields: [service_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "service_id")
+
+  @@id([date_time, doctor_id])
+  @@index([doctor_id], map: "doctor_id_idx")
+  @@index([patient_id], map: "patient_id_idx")
+  @@index([service_id], map: "service_id_idx")
+}
+
+model rights {
+  id    Int     @id @unique(map: "id_UNIQUE") @default(autoincrement()) @db.UnsignedInt
+  title String  @db.VarChar(255)
+  users users[]
+}
+
+model services {
+  id                Int                 @id @unique(map: "id_UNIQUE") @default(autoincrement()) @db.UnsignedInt
+  title             String              @db.VarChar(255)
+  price             Decimal             @db.Decimal(15, 2)
+  rendered_services rendered_services[]
+}
+
+model specialties {
+  id      Int       @id @unique(map: "id_UNIQUE") @default(autoincrement()) @db.UnsignedInt
+  title   String    @db.VarChar(255)
+  doctors doctors[]
+}
+
+model users {
+  login     String @id @unique(map: "login_UNIQUE") @db.VarChar(255)
+  password  String @db.VarChar(255)
+  name      String @db.VarChar(255)
+  rights_id Int    @db.UnsignedInt
+  rights    rights @relation(fields: [rights_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "rights_id")
+
+  @@index([rights_id], map: "rights_id_idx")
+}

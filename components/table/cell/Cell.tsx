@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import styles from './cell.module.scss';
+
 type Props = {
   text: string;
 };
@@ -7,7 +9,7 @@ type Props = {
 export default class Cell extends Component<Props> {
   render() {
     return (
-      <div>
+      <div className={styles.cell}>
         <p>{this.props.text}</p>
       </div>
     );
