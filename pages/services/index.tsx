@@ -2,7 +2,7 @@ import { GetServerSideProps } from 'next';
 import React, { Component } from 'react';
 
 import { PrismaClient } from '@prisma/client';
-import Table from '../components/table/Table';
+import Table from '../../components/table/Table';
 const prisma = new PrismaClient();
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
   };
 };
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps<Props> = async () => {
   const servicesData = await prisma.rendered_services.findMany({
     orderBy: {
       date_time: 'desc'

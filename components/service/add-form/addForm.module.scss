@@ -1,0 +1,17 @@
+.add-form-title {
+    text-align: center;
+}
+
+.add-form {
+    display: flex;
+    flex-direction: column;
+    min-height: 300px;
+    justify-content: space-between;
+    max-width: 800px;
+    margin: auto;
+
+    .input-block {
+        display: flex;
+        flex-direction: column;
+    }
+}
