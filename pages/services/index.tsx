@@ -1,9 +1,9 @@
 import { GetServerSideProps } from 'next';
 import React, { Component } from 'react';
 
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../prisma/db';
+
 import Table from '../../components/table/Table';
-const prisma = new PrismaClient();
 
 type Props = {
   server: {

@@ -1,30 +1,46 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { PrismaClient } from '@prisma/client';
+import { ServiceFormData } from '../services/add';
+// import { DateTime } from 'luxon';
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
-export default async function handler(
-  req: NextApiRequest,
+interface addRenderedServiceRequest extends NextApiRequest {
+  body: ServiceFormData;
+}
+
+export default async function addRenderedService(
+  req: addRenderedServiceRequest,
   res: NextApiResponse
 ) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const reqData = JSON.parse(req.body);
+  // const reqData = req.body;
 
-  // TODO: Find id for doctor/patient/service
-  // TODO: Setup serviceData
+  // // TODO: Find id for doctor/patient/service
+  // // TODO: Setup serviceData
 
-  // TODO: const serviceData = {
-  //   TODO: date_time: reqData.dateAndTime,
-  //   TODO: doctor_id: reqData.doctor
-  // TODO: };
+  // reqData.dateAndTime = DateTime.now().toFormat('yyyy-LL-dd HH:mm:ss');
 
-  const savedService = await prisma.rendered_services.create({
-    data: reqData
-  });
+  // const doctor_id = await prisma.doctors.findFirstOrThrow({
+  //   select: {
 
-  res.status(200).json(savedService);
+  //   }
+  // })
+
+  // const serviceData = {
+  //   date_time: reqData.dateAndTime,
+  //   doctor_id: reqData.doctor,
+  //   patient_id: reqData.patient,
+  //   service_id: reqData.service,
+  //   result: reqData.result
+  // };
+
+  // const savedService = await prisma.rendered_services.create({
+  //   data: serviceData
+  // });
+
+  res.status(200).json({});
 }
