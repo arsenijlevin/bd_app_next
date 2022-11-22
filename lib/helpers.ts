@@ -1,12 +1,13 @@
 import { UserData } from '../prisma/controller';
 
-const BASE_URL = 'http://localhost:8080/';
-
 export const getUsers = async () => {
   const options = {
     method: 'POST'
   };
-  const response = await fetch(`${BASE_URL}api/users/getAll`, options);
+  const response = await fetch(
+    `${process.env.BASE_URL}api/users/getAll`,
+    options
+  );
   const json = await response.json();
 
   if (json) return json;
@@ -20,7 +21,7 @@ export const getUser = async (userLogin: string) => {
     })
   );
 
-  const response = await fetch(`${BASE_URL}api/users/get`, {
+  const response = await fetch(`${process.env.BASE_URL}api/users/get`, {
     method: 'POST',
     body: JSON.stringify({
       userLogin: `${userLogin}`
@@ -42,7 +43,10 @@ export const addUser = async (formData: UserData) => {
       body: JSON.stringify(formData)
     };
 
-    const response = await fetch(`${BASE_URL}api/users/add`, options);
+    const response = await fetch(
+      `${process.env.BASE_URL}api/users/add`,
+      options
+    );
     const json = await response.json();
 
     return json;
@@ -65,7 +69,10 @@ export const updateUser = async (userLogin: string, formData: UserData) => {
   };
   console.log(JSON.stringify(data));
 
-  const response = await fetch(`${BASE_URL}api/users/modify`, options);
+  const response = await fetch(
+    `${process.env.BASE_URL}api/users/modify`,
+    options
+  );
   const json = await response.json();
   return json;
 };
@@ -79,7 +86,10 @@ export const deleteUser = async (userLogin: string) => {
     })
   };
 
-  const response = await fetch(`${BASE_URL}api/users/delete`, options);
+  const response = await fetch(
+    `${process.env.BASE_URL}api/users/delete`,
+    options
+  );
   const json = await response.json();
   return json;
 };

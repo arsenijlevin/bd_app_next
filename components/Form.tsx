@@ -1,8 +1,8 @@
-import AddDataForm, { UserFormData } from './AddDataForm';
+import AddDataForm, { UserFormData } from './addDataForm';
 import { useSelector } from 'react-redux';
 import { ChangeEvent, useReducer } from 'react';
 import { InitialState } from '../redux/reducer';
-import UpdateDataForm from './UpdateDataForm';
+import UpdateDataForm from './updateDataForm';
 
 const formReducer = (
   state: UserFormData,
