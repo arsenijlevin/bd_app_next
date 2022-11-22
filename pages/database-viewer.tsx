@@ -1,6 +1,5 @@
 import { GetServerSideProps } from 'next';
 import React, { Component } from 'react';
-import Table from '../components/table/Table';
 
 import { prisma } from '../prisma/db';
 
@@ -26,12 +25,11 @@ export const getServerSideProps: GetServerSideProps = async () => {
 export default class DatabaseViewer extends Component<Props> {
   render() {
     return (
-      <div>
-        <Table
-          headerTitles={['Имя', 'Пароль', 'Логин', 'ID прав']}
-          data={this.props.server.databaseData}
-        ></Table>
-      </div>
+      <section className="py-5">
+        <h2 className="text-xl md:text-5xl text-center font-bold py-10">
+          DatabaseViewer
+        </h2>
+      </section>
     );
   }
 }

@@ -10,7 +10,9 @@ type Props = {
 
 export default class Table extends Component<Props> {
   render() {
-    const tableHeader = <Row data={this.props.headerTitles}></Row>;
+    const tableHeader = (
+      <Row data={this.props.headerTitles} isHeader={true}></Row>
+    );
     return (
       <div className={styles.table}>
         {tableHeader}
