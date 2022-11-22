@@ -2,7 +2,7 @@ import { ChangeEvent, Dispatch, FormEvent } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { getUser, getUsers, updateUser } from '../lib/helpers';
 import { UserData } from '../prisma/controller';
-import { UserFormData } from './addDataForm';
+import { UserFormData } from './AddDataForm';
 // import Error from "./Error"
 
 export default function UpdateDataForm({
