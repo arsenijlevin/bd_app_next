@@ -34,7 +34,7 @@ export default function DatabaseViewer() {
       {visible ? <Form></Form> : <></>}
 
       <div className="container mx-auto">
-        <Table></Table>
+        <Table {...[]}></Table>
       </div>
     </section>
   );

@@ -1,11 +1,11 @@
 import { ChangeEvent, FormEvent, useReducer } from 'react';
 // import Error from "./Error"
 
-type UserFormData = {
+export type UserFormData = {
   login: string;
   password: string;
-  username: string;
-  rights: string;
+  name: string;
+  rights_id: string;
 };
 
 const formReducer = (
@@ -22,8 +22,8 @@ export default function AddUserForm() {
   const [formData, setFormData] = useReducer(formReducer, {
     login: '',
     password: '',
-    username: '',
-    rights: ''
+    name: '',
+    rights_id: ''
   });
 
   const handleSubmit = (event: FormEvent) => {
