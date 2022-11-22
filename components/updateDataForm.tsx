@@ -1,38 +1,47 @@
-import { ChangeEvent, FormEvent, useReducer } from 'react';
+import { ChangeEvent, Dispatch, FormEvent } from 'react';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { getUser, getUsers, updateUser } from '../lib/helpers';
+import { UserData } from '../prisma/controller';
+import { UserFormData } from './AddDataForm';
 // import Error from "./Error"
 
-type UserFormData = {
-  login: string;
-  password: string;
-  username: string;
-  rights: string;
-};
+export default function UpdateDataForm({
+  userLogin,
+  formData,
+  setFormData
+}: {
+  userLogin: string;
+  formData: UserFormData;
+  setFormData: Dispatch<ChangeEvent<HTMLInputElement>>;
+}) {
+  const queryClient = useQueryClient();
+  const { isLoading, isError, data } = useQuery(['users', userLogin], () => {
+    console.log(userLogin);
 
-const formReducer = (
-  state: UserFormData,
-  event: ChangeEvent<HTMLInputElement>
-) => {
-  return {
-    ...state,
-    [event.target.name]: event.target.value
-  };
-};
-
-export default function UpdateUserForm() {
-  const [formData, setFormData] = useReducer(formReducer, {
-    login: '',
-    password: '',
-    username: '',
-    rights: ''
+    getUser(userLogin);
   });
+  const updateMutation = useMutation(
+    (newData: UserData) => updateUser(userLogin, newData),
+    {
+      onSuccess: async () => {
+        queryClient.prefetchQuery('users', getUsers);
+      }
+    }
+  );
 
-  const handleSubmit = (event: FormEvent) => {
+  if (isLoading) return <div>Loading...!</div>;
+  if (isError) return <div>Error</div>;
+
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
     if (Object.values(formData).every(value => value.length === 0))
       return console.error('Форма пуста');
 
-    console.log(Object.values(formData));
+    const updated = Object.assign({}, data, formData, {
+      rights_id: parseInt(formData.rights_id)
+    });
+    updateMutation.mutate(updated);
   };
 
   // if (Object.keys(formData).length > 0) return <Error message='Произошла ошибка!'></Error>
@@ -43,6 +52,7 @@ export default function UpdateUserForm() {
         <input
           type="text"
           onChange={setFormData}
+          defaultValue={formData.login}
           name="login"
           placeholder="Логин"
           className="border w-full px-5 py-3 focus:outline-none rounded-md"
@@ -51,6 +61,7 @@ export default function UpdateUserForm() {
       <div className="input-type">
         <input
           type="text"
+          defaultValue={formData.password}
           onChange={setFormData}
           name="password"
           placeholder="Пароль"
@@ -60,7 +71,8 @@ export default function UpdateUserForm() {
       <div className="input-type">
         <input
           type="text"
-          name="username"
+          name="name"
+          defaultValue={formData.name}
           onChange={setFormData}
           placeholder="Имя пользователя"
           className="border w-full px-5 py-3 focus:outline-none rounded-md"
@@ -70,7 +82,8 @@ export default function UpdateUserForm() {
         <input
           type="text"
           onChange={setFormData}
-          name="rights"
+          defaultValue={formData.rights_id}
+          name="rights_id"
           placeholder="Права"
           className="border w-full px-5 py-3 focus:outline-none rounded-md"
         />

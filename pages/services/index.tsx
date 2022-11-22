@@ -55,8 +55,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
 
 export default class Services extends Component<Props> {
   render() {
-    console.log(this.props.server.databaseData);
-
     return <div></div>;
   }
 }

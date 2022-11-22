@@ -1,5 +1,8 @@
-import { ChangeEvent, FormEvent, useReducer } from 'react';
-// import Error from "./Error"
+import { ChangeEvent, Dispatch, FormEvent } from 'react';
+import { useMutation, useQueryClient } from 'react-query';
+import { addUser, getUsers } from '../lib/helpers';
+import Success from './Success';
+import Error from './Error';
 
 export type UserFormData = {
   login: string;
@@ -8,35 +11,44 @@ export type UserFormData = {
   rights_id: string;
 };
 
-const formReducer = (
-  state: UserFormData,
-  event: ChangeEvent<HTMLInputElement>
-) => {
-  return {
-    ...state,
-    [event.target.name]: event.target.value
-  };
-};
+export default function AddDataForm({
+  formData,
+  setFormData
+}: {
+  formData: UserFormData;
+  setFormData: Dispatch<ChangeEvent<HTMLInputElement>>;
+}) {
+  const queryClient = useQueryClient();
+  const addMutation = useMutation(addUser, {
+    onSuccess: () => {
+      console.log('DATA INSERTED');
 
-export default function AddUserForm() {
-  const [formData, setFormData] = useReducer(formReducer, {
-    login: '',
-    password: '',
-    name: '',
-    rights_id: ''
+      queryClient.prefetchQuery('users', getUsers);
+    }
   });
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    console.log(formData);
 
     if (Object.values(formData).every(value => value.length === 0))
       return console.error('Форма пуста');
 
-    console.log(Object.values(formData));
+    const { login, password, name, rights_id } = formData;
+
+    const model = {
+      login: login,
+      password: password,
+      name: name,
+      rights_id: parseInt(rights_id)
+    };
+
+    addMutation.mutate(model);
   };
 
-  // if (Object.keys(formData).length > 0) return <Error message='Произошла ошибка!'></Error>
-
+  if (addMutation.isLoading) return <div>Loading!</div>;
+  if (addMutation.isError) return <Error message={`Произошла ошибка!`}></Error>;
+  if (addMutation.isSuccess) return <Success message={'Успешно!'}></Success>;
   return (
     <form className="grid lg:grid-cols-2 w-2/3 gap-4" onSubmit={handleSubmit}>
       <div className="input-type">
@@ -60,7 +72,7 @@ export default function AddUserForm() {
       <div className="input-type">
         <input
           type="text"
-          name="username"
+          name="name"
           onChange={setFormData}
           placeholder="Имя пользователя"
           className="border w-full px-5 py-3 focus:outline-none rounded-md"
@@ -70,7 +82,7 @@ export default function AddUserForm() {
         <input
           type="text"
           onChange={setFormData}
-          name="rights"
+          name="rights_id"
           placeholder="Права"
           className="border w-full px-5 py-3 focus:outline-none rounded-md"
         />

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { UserFormData } from '../components/addDataForm';
+
 import { prisma } from './db';
 
 export type UserData = {
@@ -13,7 +13,7 @@ export async function getUsers(req: NextApiRequest, res: NextApiResponse) {
   try {
     const users = await prisma.users.findMany();
 
-    if (!users) return res.status(404);
+    if (!users) return res.status(404).json({ error: 'Not found' });
 
     return res.status(200).json(users);
   } catch (error) {
@@ -23,7 +23,7 @@ export async function getUsers(req: NextApiRequest, res: NextApiResponse) {
 
 export async function addUsers(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const formData: UserFormData = req.body;
+    const formData: UserData = req.body;
 
     if (!formData) {
       return res.status(404).json({ error: 'Data is not provided' });
@@ -33,7 +33,7 @@ export async function addUsers(req: NextApiRequest, res: NextApiResponse) {
       login: formData.login,
       password: formData.password,
       name: formData.name,
-      rights_id: parseInt(formData.rights_id)
+      rights_id: formData.rights_id
     };
 
     const user = await prisma.users.create({
@@ -54,6 +54,8 @@ export async function modifyUsers(req: NextApiRequest, res: NextApiResponse) {
     if (!userLogin || !formData) {
       return res.status(404).json({ error: 'Data is not provided' });
     }
+
+    console.log('asd');
 
     const user = await prisma.users.update({
       where: {
@@ -91,6 +93,7 @@ export async function deleteUsers(req: NextApiRequest, res: NextApiResponse) {
 export async function getUser(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { userLogin } = req.body;
+    console.log(userLogin + ' asdads');
 
     if (!userLogin) {
       return res.status(404).json({ error: 'Data is not provided' });

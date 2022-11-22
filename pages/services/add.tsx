@@ -32,9 +32,6 @@ const submitService = async (event: FormEvent<HTMLFormElement>) => {
 
   formObject.dateAndTime = DateTime.now().toFormat('yyyy-LL-dd HH:mm:ss');
 
-  console.log(formObject.dateAndTime);
-  console.log(formObject);
-
   const response = await fetch('/api/addRenderedService', {
     method: 'POST',
     body: JSON.stringify(formObject)
