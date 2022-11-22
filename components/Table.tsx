@@ -9,9 +9,6 @@ export default class Table extends Component {
         <thead>
           <tr className="bg-gray-800">
             <th className="px-16 py-2">
-              <span className="text-gray-200">Дата регистрации</span>
-            </th>
-            <th className="px-16 py-2">
               <span className="text-gray-200">Логин</span>
             </th>
             <th className="px-16 py-2">
@@ -31,9 +28,6 @@ export default class Table extends Component {
         <tbody className="bg-gray-200">
           <tr className="bg-gray-50 text-center">
             <td className="px-16 py-2 flex flex-row items-center">
-              <span>Тест дата регистрации</span>
-            </td>
-            <td className="px-16 py-2">
               <span>Тест логин</span>
             </td>
             <td className="px-16 py-2">
