@@ -3,8 +3,6 @@ import React, { Component } from 'react';
 
 import { prisma } from '../../prisma/db';
 
-import Table from '../../components/table/Table';
-
 type Props = {
   server: {
     databaseData: string[][];
@@ -59,17 +57,6 @@ export default class Services extends Component<Props> {
   render() {
     console.log(this.props.server.databaseData);
 
-    return (
-      <Table
-        data={this.props.server.databaseData}
-        headerTitles={[
-          'Дата и время',
-          'Врач',
-          'Пациент',
-          'Услуга',
-          'Результат'
-        ]}
-      ></Table>
-    );
+    return <div></div>;
   }
 }

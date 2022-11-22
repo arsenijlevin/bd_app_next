@@ -4,6 +4,8 @@ import React, { Component } from 'react';
 import { prisma } from '../prisma/db';
 
 import { BiUserPlus } from 'react-icons/bi';
+import Table from '../components/Table';
+import Form from '../components/Form';
 
 type Props = {
   maxRows: number;
@@ -33,12 +35,22 @@ export default class DatabaseViewer extends Component<Props> {
         </h2>
 
         <div className="container mx-auto flex justify-between py-5 border-b">
-          <div className="flex bg-indigo-500 text-white px-4 py-2 border rounded-md hover:bg-indigo-300 hover:text-gray-800">
-            <button className="flex">
+          <div className="left flex gap-3">
+            <button className="flex bg-indigo-500 text-white px-4 py-2 border rounded-md hover:bg-indigo-300 hover:text-gray-800">
               Добавить
-              <BiUserPlus size={23}></BiUserPlus>
+              <span className="px-1">
+                <BiUserPlus size={23}></BiUserPlus>
+              </span>
             </button>
           </div>
+        </div>
+
+        <div className="container mx-auto py-5">
+          <Form></Form>
+        </div>
+
+        <div className="container mx-auto">
+          <Table></Table>
         </div>
       </section>
     );
