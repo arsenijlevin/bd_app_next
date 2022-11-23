@@ -15,17 +15,10 @@ const formReducer = (
 };
 
 export default function Form() {
-  const [formData, setFormData] = useReducer(formReducer, {
-    login: '',
-    password: '',
-    name: '',
-    rights_id: ''
-  });
+  const [formData, setFormData] = useReducer(formReducer, {} as UserFormData);
   const userLogin = useSelector(
     (state: { app: InitialState }) => state.app.client.userLogin
   );
-
-  console.log(userLogin);
 
   return (
     <div className="container mx-auto py-5">

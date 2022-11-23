@@ -54,7 +54,11 @@ export default function DatabaseViewer() {
               <BiUserPlus size={23}></BiUserPlus>
             </span>
           </button>
-          {deleteId ? DeleteComponent({ deleteHandler, cancleHandler }) : <></>}
+          {deleteId ? (
+            DeleteComponent({ deleteHandler, cancleHandler, deleteId })
+          ) : (
+            <></>
+          )}
         </div>
       </div>
 
@@ -69,14 +73,18 @@ export default function DatabaseViewer() {
 
 function DeleteComponent({
   deleteHandler,
-  cancleHandler
+  cancleHandler,
+  deleteId
 }: {
   deleteHandler: () => void;
   cancleHandler: () => void;
+  deleteId: string;
 }) {
   return (
     <div className="flex gap-5">
-      <button>Вы уверены?</button>
+      <button>
+        Удалить <span className="font-bold">{deleteId}</span>?
+      </button>
       <button
         onClick={deleteHandler}
         className="flex bg-red-500 text-white px-4 py-2 border rounded-md hover:bg-rose-500 hover:border-red-500 hover:text-gray-50"
