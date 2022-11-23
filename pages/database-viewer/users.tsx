@@ -104,7 +104,6 @@ export default function DatabaseViewerUsers() {
           </div>
         </div>
         <Form
-          dataQueryKey={queryKey}
           CRUDFunctions={{
             getAll: getUsers,
             get: getUser,

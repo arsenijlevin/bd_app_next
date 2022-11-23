@@ -7,7 +7,6 @@ import { ICRUDFunctions } from '../prisma/controller';
 import { KeyContext } from '../pages/database-viewer/users';
 
 interface IFormProps<T> {
-  dataQueryKey: string;
   CRUDFunctions: ICRUDFunctions<T>;
 }
 
