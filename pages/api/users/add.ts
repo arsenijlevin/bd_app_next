@@ -6,5 +6,5 @@ export default function add(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  addUsers(req, res);
+  return addUsers(req, res).then(() => res.end());
 }

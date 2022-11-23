@@ -6,5 +6,5 @@ export default function deleteData(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  deleteUsers(req, res);
+  return deleteUsers(req, res).then(() => res.end());
 }

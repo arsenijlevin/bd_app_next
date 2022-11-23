@@ -20,8 +20,6 @@ export const ReducerSlice = createSlice({
       state.client.toggleForm = !state.client.toggleForm;
     },
     updateAction: (state, action) => {
-      console.log(action.payload);
-
       state.client.userLogin = action.payload;
     },
     deleteAction: (state, action) => {

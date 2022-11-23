@@ -72,10 +72,10 @@ function Tr(data: UserData) {
       <td className="px-16 py-2 flex flex-row items-center">
         <span>{data.login}</span>
       </td>
-      <td className="px-16 py-2">
+      <td className="px-16 py-2 break-words max-w-sm">
         <span>{data.password}</span>
       </td>
-      <td className="px-16 py-2">
+      <td className="px-16 py-2 break-words max-w-sm">
         <span>{data.name}</span>
       </td>
       <td className="px-16 py-2">

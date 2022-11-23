@@ -21,17 +21,14 @@ export default function AddDataForm({
   const queryClient = useQueryClient();
   const addMutation = useMutation(addUser, {
     onSuccess: () => {
-      console.log('DATA INSERTED');
-
       queryClient.prefetchQuery('users', getUsers);
     }
   });
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    console.log(formData);
 
-    if (Object.values(formData).every(value => value.length === 0))
+    if (Object.values(formData).some(value => value.length === 0))
       return console.error('Форма пуста');
 
     const { login, password, name, rights_id } = formData;

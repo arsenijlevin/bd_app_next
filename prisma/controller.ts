@@ -29,15 +29,8 @@ export async function addUsers(req: NextApiRequest, res: NextApiResponse) {
       return res.status(404).json({ error: 'Data is not provided' });
     }
 
-    const userData: UserData = {
-      login: formData.login,
-      password: formData.password,
-      name: formData.name,
-      rights_id: formData.rights_id
-    };
-
     const user = await prisma.users.create({
-      data: userData
+      data: formData
     });
 
     return res.status(200).json({ user: user });
@@ -48,20 +41,25 @@ export async function addUsers(req: NextApiRequest, res: NextApiResponse) {
 
 export async function modifyUsers(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { userLogin } = req.body;
-    const formData = req.body;
+    const formData = JSON.parse(req.body);
+    const userLogin: string = formData.userLogin;
+    console.log(formData);
+    console.log(userLogin);
 
     if (!userLogin || !formData) {
       return res.status(404).json({ error: 'Data is not provided' });
     }
 
-    console.log('asd');
-
     const user = await prisma.users.update({
       where: {
-        login: userLogin.toString()
+        login: userLogin
       },
-      data: formData
+      data: {
+        login: formData.login,
+        password: formData.password,
+        name: formData.name,
+        rights_id: formData.rights_id
+      }
     });
 
     return res.status(200).json({ user: user });
@@ -92,14 +90,13 @@ export async function deleteUsers(req: NextApiRequest, res: NextApiResponse) {
 
 export async function getUser(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { userLogin } = req.body;
-    console.log(userLogin + ' asdads');
+    const userLogin = req.body.userLogin;
 
     if (!userLogin) {
       return res.status(404).json({ error: 'Data is not provided' });
     }
 
-    const users = await prisma.users.findMany({
+    const users = await prisma.users.findFirst({
       where: {
         login: userLogin.toString()
       }
