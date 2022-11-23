@@ -15,7 +15,7 @@ export const getUsers = async () => {
   const json = await response.json();
 
   if (json) return json;
-  return {};
+  return [];
 };
 
 export const getUser = async (userLogin: string) => {
@@ -54,7 +54,8 @@ export const addUser = async (formData: UserData) => {
   }
   const json = await response.json();
 
-  return json;
+  if (json) return json;
+  return {};
 };
 
 export const updateUser = async (userLogin: string, formData: UserData) => {
@@ -80,7 +81,8 @@ export const updateUser = async (userLogin: string, formData: UserData) => {
     throw new Error('Error while fetching data!');
   }
   const json = await response.json();
-  return json;
+  if (json) return json;
+  return {};
 };
 
 export const deleteUser = async (userLogin: string) => {

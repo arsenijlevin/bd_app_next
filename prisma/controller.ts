@@ -2,6 +2,14 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import { prisma } from './db';
 
+export interface ICRUDFunctions<T> {
+  getAll: () => Promise<T[]>;
+  get: (key: keyof T) => Promise<T>;
+  set: (data: T) => Promise<T>;
+  update: (key: keyof T, data: T) => Promise<T>;
+  delete: (key: keyof T) => Promise<T>;
+}
+
 export type UserData = {
   login: string;
   password: string;

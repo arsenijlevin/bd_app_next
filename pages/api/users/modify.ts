@@ -6,9 +6,5 @@ export default function modify(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  return modifyUsers(req, res)
-    .then(() => res.end())
-    .catch(() => {
-      throw new Error();
-    });
+  return modifyUsers(req, res).then(() => res.end());
 }
