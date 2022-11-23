@@ -1,38 +1,33 @@
-import { ChangeEvent, Dispatch, FormEvent } from 'react';
+import { ChangeEvent, Dispatch, FormEvent, useContext } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
+import { KeyContext } from '../pages/database-viewer/users';
 import { ICRUDFunctions } from '../prisma/controller';
 
 import Error from './Error';
 import Success from './Success';
-import { IInputData } from './UpdateDataForm';
 
 interface IAddForm<T> {
-  dataKey: string;
-  formData: Record<string, string>;
-  inputData: IInputData[];
   setData: Dispatch<ChangeEvent<HTMLInputElement>>;
   CRUDFunctions: ICRUDFunctions<T>;
+  formData: T;
 }
 
 export default function AddDataForm<T>({
-  dataKey,
   formData,
-  inputData,
   setData,
   CRUDFunctions
 }: IAddForm<T>) {
+  const { queryKey, inputData, formNames } = useContext(KeyContext);
+
   const queryClient = useQueryClient();
   const addMutation = useMutation(CRUDFunctions.set, {
     onSuccess: () => {
-      queryClient.prefetchQuery(dataKey, CRUDFunctions.getAll);
+      queryClient.prefetchQuery(queryKey, CRUDFunctions.getAll);
     }
   });
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-
-    if (Object.values(formData).every(value => !value))
-      return <div>Необходимо заполнить форму</div>;
 
     addMutation.mutate(formData as T);
   };
@@ -43,13 +38,13 @@ export default function AddDataForm<T>({
 
   return (
     <form className="grid lg:grid-cols-2 w-2/3 gap-4" onSubmit={handleSubmit}>
-      {Object.keys(formData).map((dataKey: string, index: number) => {
+      {Object.values(formNames).map((formName: string, index: number) => {
         return (
           <div className="input-type" key={index}>
             <input
               type="text"
               onChange={setData}
-              name={dataKey}
+              name={formName}
               placeholder={inputData[index].placeholder}
               className="border w-full px-5 py-3 focus:outline-none rounded-md"
             />

@@ -1,12 +1,11 @@
-import { ChangeEvent, Dispatch, FormEvent } from 'react';
+import { ChangeEvent, Dispatch, FormEvent, useContext } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useQueryOptions } from '../lib/helpers';
+import { KeyContext } from '../pages/database-viewer/users';
 import { ICRUDFunctions } from '../prisma/controller';
 
 interface IUpdateForm<T> {
-  key: string;
-  dataKey: string;
   formData: Record<string, string>;
-  inputData: IInputData[];
   setData: Dispatch<ChangeEvent<HTMLInputElement>>;
   CRUDFunctions: ICRUDFunctions<T>;
 }
@@ -16,23 +15,28 @@ export interface IInputData {
 }
 
 export default function UpdateDataForm<T>({
-  key,
-  dataKey,
   formData,
-  inputData,
   setData,
   CRUDFunctions
 }: IUpdateForm<T>) {
-  const queryClient = useQueryClient();
+  const { queryKey, searchKey, inputData } = useContext(KeyContext);
+  console.log([queryKey, searchKey]);
 
-  const { isLoading, isError, data } = useQuery([dataKey, key], () =>
-    CRUDFunctions.get(key as keyof T)
+  const queryClient = useQueryClient();
+  const { isLoading, isError, data } = useQuery(
+    [queryKey, searchKey],
+    () => {
+      console.log('searchKey inside => ', searchKey);
+
+      return CRUDFunctions.get(searchKey as keyof T);
+    },
+    useQueryOptions
   );
   const updateMutation = useMutation(
-    (newData: T) => CRUDFunctions.update(key as keyof T, newData),
+    (newData: T) => CRUDFunctions.update(searchKey as keyof T, newData),
     {
       onSuccess: async () => {
-        queryClient.prefetchQuery(dataKey, CRUDFunctions.getAll);
+        queryClient.prefetchQuery(queryKey, CRUDFunctions.getAll);
         console.log('COMPLETE');
       }
     }
@@ -55,7 +59,7 @@ export default function UpdateDataForm<T>({
   return (
     <div>
       <h4 className="mb-3">
-        Редактируется: <span className="font-bold">{key || ''}</span>
+        Редактируется: <span className="font-bold">{searchKey || ''}</span>
       </h4>
       <form className="grid lg:grid-cols-2 w-2/3 gap-4" onSubmit={handleSubmit}>
         {Object.keys(data).map((dataKey: string, index: number) => {

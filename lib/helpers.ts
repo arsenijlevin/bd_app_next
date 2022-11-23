@@ -1,6 +1,20 @@
 import { UserData } from '../prisma/controller';
 
-export const getUsers = async () => {
+interface IQueryOptions {
+  refetchOnMount: boolean;
+  refetchOnWindowFocus: boolean;
+}
+
+function parseIntIfValueIsString(value: string | number) {
+  return typeof value === 'string' ? parseInt(value) : value;
+}
+
+export const useQueryOptions: IQueryOptions = {
+  refetchOnMount: false,
+  refetchOnWindowFocus: false
+};
+
+export const getUsers = async (): Promise<UserData[]> => {
   const options = {
     method: 'POST'
   };
@@ -38,7 +52,11 @@ export const getUser = async (userLogin: string) => {
   return {};
 };
 
-export const addUser = async (formData: UserData) => {
+export const addUser = async (
+  formData: Omit<UserData, 'rights_id'> & { rights_id: string | number }
+) => {
+  formData.rights_id = parseIntIfValueIsString(formData.rights_id);
+
   const options = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

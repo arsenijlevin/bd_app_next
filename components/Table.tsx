@@ -11,7 +11,7 @@ interface ITableHeaderProps {
   headers: string[];
 }
 
-export default function Table<T extends Record<string, string>>({
+export default function Table<T extends Record<string, string | number>>({
   headers,
   data
 }: ITableProps<T>) {
@@ -30,22 +30,30 @@ export default function Table<T extends Record<string, string>>({
 function TableHeader({ headers }: ITableHeaderProps) {
   return (
     <thead>
-      <tr>
+      <tr className="bg-gray-800">
         {headers.map((header: string, index: number) => (
           <th className="px-16 py-2" key={index}>
             <span className="text-gray-200">{header}</span>
           </th>
         ))}
+        <th className="px-16 py-2">
+          <span className="text-gray-200">Действия</span>
+        </th>
       </tr>
     </thead>
   );
 }
 
-function TableRow<T extends Record<string, string>>(data: T) {
-  const { setKeyProperty: setKey } = useContext(KeyContext);
+function TableRow<T extends Record<string, string | number>>(data: T) {
+  const { setSearchKey, setFormMode } = useContext(KeyContext);
 
   const onUpdate = () => {
-    setKey(data['key']);
+    console.log('Updating');
+
+    setFormMode && setFormMode('update');
+    setSearchKey && setSearchKey(data.login);
+
+    console.log('Search Key Set =>, ', data.login);
   };
 
   const onDelete = () => {
@@ -53,7 +61,7 @@ function TableRow<T extends Record<string, string>>(data: T) {
   };
 
   return (
-    <tr className="bg-gray-50 text-center flex flex-row items-center">
+    <tr className="bg-gray-50 text-center">
       {Object.values(data).map((value, index: number) => {
         return (
           <td className="px-16 py-2" key={index}>
