@@ -1,40 +1,35 @@
 import AddDataForm from './AddDataForm';
 
-import { ChangeEvent, useContext, useReducer } from 'react';
+import { useContext, useEffect } from 'react';
 
 import UpdateDataForm from './UpdateDataForm';
-import { ICRUDFunctions } from '../prisma/controller';
+
 import { KeyContext } from '../pages/database-viewer/users';
+import { useQuery } from 'react-query';
+import { getUser, useQueryOptions } from '../lib/helpers';
 
-interface IFormProps<T> {
-  CRUDFunctions: ICRUDFunctions<T>;
-}
+export default function Form() {
+  const { formMode, userKey, setUserToUpdate, userToUpdate } =
+    useContext(KeyContext);
 
-function formReducer<T>(state: T, event: ChangeEvent<HTMLInputElement>) {
-  return {
-    ...state,
-    [event.target.name]: event.target.value
-  };
-}
+  const { data } = useQuery(
+    ['users', userKey],
+    async () => getUser(userKey),
 
-export default function Form<T>({ CRUDFunctions }: IFormProps<T>) {
-  const [formData, setFormData] = useReducer(formReducer, {});
-  const { formMode } = useContext(KeyContext);
-  console.log(formMode);
+    useQueryOptions
+  );
+
+  useEffect(() => {
+    setUserToUpdate && setUserToUpdate(data);
+  }, [setUserToUpdate, data, userToUpdate]);
 
   return (
     <div className="container mx-auto py-5">
       {formMode === 'update'
         ? UpdateDataForm({
-            setData: setFormData,
-            formData: formData,
-            CRUDFunctions: CRUDFunctions
+            userToUpdate: userToUpdate
           })
-        : AddDataForm({
-            formData: formData as T,
-            setData: setFormData,
-            CRUDFunctions: CRUDFunctions
-          })}
+        : AddDataForm()}
     </div>
   );
 }

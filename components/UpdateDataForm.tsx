@@ -1,49 +1,33 @@
-import { ChangeEvent, Dispatch, FormEvent, useContext } from 'react';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { useQueryOptions } from '../lib/helpers';
+import { ChangeEvent, FormEvent, useContext } from 'react';
+import { useMutation, useQueryClient } from 'react-query';
+import { getUsers, updateUser } from '../lib/helpers';
 import { KeyContext } from '../pages/database-viewer/users';
-import { ICRUDFunctions } from '../prisma/controller';
 
-interface IUpdateForm<T> {
-  formData: Record<string, string>;
-  setData: Dispatch<ChangeEvent<HTMLInputElement>>;
-  CRUDFunctions: ICRUDFunctions<T>;
+import { UserData } from '../prisma/controller';
+import Error from './Error';
+import Loading from './Loading';
+import Success from './Success';
+
+interface IUpdateForm {
+  userToUpdate: UserData | undefined;
 }
 
-export interface IInputData {
-  placeholder?: string;
-}
-
-export default function UpdateDataForm<T>({
-  formData,
-  setData,
-  CRUDFunctions
-}: IUpdateForm<T>) {
-  const { queryKey, searchKey, inputData } = useContext(KeyContext);
-  console.log([queryKey, searchKey]);
+export default function UpdateDataForm({ userToUpdate }: IUpdateForm) {
+  const { formData, setFormData, setFormMode } = useContext(KeyContext);
 
   const queryClient = useQueryClient();
-  const { isLoading, isError, data } = useQuery(
-    [queryKey, searchKey],
-    () => {
-      console.log('searchKey inside => ', searchKey);
 
-      return CRUDFunctions.get(searchKey as keyof T);
-    },
-    useQueryOptions
-  );
   const updateMutation = useMutation(
-    (newData: T) => CRUDFunctions.update(searchKey as keyof T, newData),
+    (newData: UserData) => updateUser(userToUpdate?.login, newData),
     {
       onSuccess: async () => {
-        queryClient.prefetchQuery(queryKey, CRUDFunctions.getAll);
-        console.log('COMPLETE');
+        queryClient.prefetchQuery('users', getUsers);
+      },
+      onError: async () => {
+        updateMutation.isError = true;
       }
     }
   );
-
-  if (isLoading) return <div>Loading...!</div>;
-  if (isError || !data || !formData) return <div>Error</div>;
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -51,38 +35,96 @@ export default function UpdateDataForm<T>({
     if (Object.values(formData).every(value => !value))
       return <div>Необходимо заполнить форму</div>;
 
-    const model = Object.assign({}, data, formData);
+    const model = Object.assign({}, userToUpdate, formData);
 
     updateMutation.mutate(model);
+
+    setTimeout(() => {
+      updateMutation.reset();
+      setFormData && setFormData({} as UserData);
+      setFormMode && setFormMode('add');
+    }, 2000);
   };
 
+  if (updateMutation.isLoading || !userToUpdate) return <Loading></Loading>;
+  if (updateMutation.isError)
+    return <Error message="Ошибка при выполнении запроса"></Error>;
+
+  if (updateMutation.isSuccess) return <Success message="Успешно!"></Success>;
+
+  const { login, password, name, rights_id } = userToUpdate;
+
   return (
-    <div>
-      <h4 className="mb-3">
-        Редактируется: <span className="font-bold">{searchKey || ''}</span>
-      </h4>
+    <div key={userToUpdate.login}>
       <form className="grid lg:grid-cols-2 w-2/3 gap-4" onSubmit={handleSubmit}>
-        {Object.keys(data).map((dataKey: string, index: number) => {
-          return (
-            <div className="input-type" key={index}>
-              <input
-                type="text"
-                onChange={setData}
-                defaultValue={
-                  (data as Record<string, string | number>)[dataKey] || ''
-                }
-                name={dataKey}
-                placeholder={inputData[index].placeholder}
-                className="border w-full px-5 py-3 focus:outline-none rounded-md"
-              />
-            </div>
-          );
-        })}
+        <div className="input-type">
+          <input
+            type="text"
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setFormData &&
+                setFormData(
+                  Object.assign(formData, { login: event.target.value })
+                );
+            }}
+            name="login"
+            defaultValue={login}
+            placeholder="Логин"
+            className="border w-full px-5 py-3 focus:outline-none rounded-md"
+          />
+        </div>
+        <div className="input-type">
+          <input
+            type="text"
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setFormData &&
+                setFormData(
+                  Object.assign(formData, { password: event.target.value })
+                );
+            }}
+            name="password"
+            defaultValue={password}
+            placeholder="Пароль"
+            className="border w-full px-5 py-3 focus:outline-none rounded-md"
+          />
+        </div>
+        <div className="input-type">
+          <input
+            type="text"
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setFormData &&
+                setFormData(
+                  Object.assign(formData, { name: event.target.value })
+                );
+            }}
+            defaultValue={name}
+            name="name"
+            placeholder="Имя пользователя"
+            className="border w-full px-5 py-3 focus:outline-none rounded-md"
+          />
+        </div>
+        <div className="input-type">
+          <input
+            type="number"
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setFormData &&
+                setFormData(
+                  Object.assign(formData, { rights_id: event.target.value })
+                );
+            }}
+            defaultValue={rights_id}
+            name="rights_id"
+            placeholder="Права"
+            className="border w-full px-5 py-3 focus:outline-none rounded-md"
+          />
+        </div>
 
         <button className="flex justify-center text-md w-1/3 bg-yellow-500 text-white px-4 py-2 border rounded-md hover:bg-gray-50 hover:border-yellow-50 hover:text-yellow-500">
           Обновить
         </button>
       </form>
+      <h4 className="mb-3 mt-2">
+        Редактируется: <span className="font-bold">{login}</span>
+      </h4>
     </div>
   );
 }

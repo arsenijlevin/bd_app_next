@@ -19,37 +19,25 @@ export const getUsers = async (): Promise<UserData[]> => {
     method: 'POST'
   };
 
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}api/users/getAll`,
-    options
-  );
-  if (!response.ok) {
-    throw new Error('Error while fetching data!');
-  }
-  const json = await response.json();
-
-  if (json) return json;
-  return [];
+  return await (
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}api/users/getAll`, options)
+  ).json();
 };
 
-export const getUser = async (userLogin: string) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}api/users/get`,
-    {
+export const getUser = async (
+  userLogin: string
+): Promise<UserData | undefined> => {
+  if (!userLogin) return undefined;
+
+  return await (
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}api/users/get`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: `{
         "userLogin": "${userLogin}"
       }`
-    }
-  );
-  if (!response.ok) {
-    throw new Error('Error while fetching data!');
-  }
-  const json = await response.json();
-
-  if (json) return json;
-  return {};
+    })
+  ).json();
 };
 
 export const addUser = async (
@@ -68,7 +56,7 @@ export const addUser = async (
     options
   );
   if (!response.ok) {
-    throw new Error('Error while fetching data!');
+    return Promise.reject('Unexpected error happened');
   }
   const json = await response.json();
 
@@ -76,7 +64,12 @@ export const addUser = async (
   return {};
 };
 
-export const updateUser = async (userLogin: string, formData: UserData) => {
+export const updateUser = async (
+  userLogin: string | undefined,
+  formData: UserData
+) => {
+  if (!userLogin) return {} as UserData;
+
   const data = {
     userLogin: userLogin,
     login: formData.login,
@@ -84,6 +77,8 @@ export const updateUser = async (userLogin: string, formData: UserData) => {
     name: formData.name,
     rights_id: formData.rights_id
   };
+
+  data.rights_id = parseIntIfValueIsString(data.rights_id);
 
   const options = {
     method: 'PUT',
@@ -96,7 +91,7 @@ export const updateUser = async (userLogin: string, formData: UserData) => {
   );
 
   if (!response.ok) {
-    throw new Error('Error while fetching data!');
+    return Promise.reject('Unexpected error happened');
   }
   const json = await response.json();
   if (json) return json;
@@ -112,13 +107,7 @@ export const deleteUser = async (userLogin: string) => {
     })
   };
 
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}api/users/delete`,
-    options
-  );
-  if (!response.ok) {
-    throw new Error('Error while fetching data!');
-  }
-  const json = await response.json();
-  return json;
+  return await (
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}api/users/delete`, options)
+  ).json();
 };

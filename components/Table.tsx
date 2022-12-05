@@ -1,26 +1,24 @@
 import { useContext } from 'react';
 import { BiEdit, BiTrashAlt } from 'react-icons/bi';
 import { KeyContext } from '../pages/database-viewer/users';
+import { UserData } from '../prisma/controller';
 
-interface ITableProps<T> {
+interface ITableProps {
   headers: string[];
-  data: T[];
+  data: UserData[];
 }
 
 interface ITableHeaderProps {
   headers: string[];
 }
 
-export default function Table<T extends Record<string, string | number>>({
-  headers,
-  data
-}: ITableProps<T>) {
+export default function Table({ headers, data }: ITableProps) {
   return (
     <table className="min-w-full table-auto">
       <TableHeader headers={headers}></TableHeader>
       <tbody className="bg-gray-200">
-        {data.map((object: T, index: number) => (
-          <TableRow<T> key={index} {...object} />
+        {data.map((object: UserData, index: number) => (
+          <TableRow key={index} {...object} />
         ))}
       </tbody>
     </table>
@@ -44,20 +42,18 @@ function TableHeader({ headers }: ITableHeaderProps) {
   );
 }
 
-function TableRow<T extends Record<string, string | number>>(data: T) {
-  const { setSearchKey, setFormMode } = useContext(KeyContext);
+function TableRow(data: UserData) {
+  const { setUserKey, setFormMode, setUserToUpdate, setDeleteKey } =
+    useContext(KeyContext);
 
   const onUpdate = () => {
-    console.log('Updating');
-
     setFormMode && setFormMode('update');
-    setSearchKey && setSearchKey(data.login);
-
-    console.log('Search Key Set =>, ', data.login);
+    setUserKey && setUserKey(data.login);
+    setUserToUpdate && setUserToUpdate(data);
   };
 
   const onDelete = () => {
-    console.log('Deleted!');
+    setDeleteKey && setDeleteKey(data.login);
   };
 
   return (

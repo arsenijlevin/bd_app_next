@@ -6,5 +6,9 @@ export default function getAll(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  return getUsers(req, res).then(() => res.end());
+  return getUsers(req, res)
+    .catch(() => {
+      res.status(500).json({ message: 'Unexpected error happened' });
+    })
+    .finally(() => res.end());
 }

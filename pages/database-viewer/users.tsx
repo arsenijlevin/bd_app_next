@@ -2,70 +2,60 @@
 
 import { createContext, Dispatch, SetStateAction, useState } from 'react';
 import { BiUserPlus } from 'react-icons/bi';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import Error from '../../components/Error';
 import Form from '../../components/Form';
 import Loading from '../../components/Loading';
 import Table from '../../components/Table';
-import { IInputData } from '../../components/UpdateDataForm';
-import {
-  addUser,
-  deleteUser,
-  getUser,
-  getUsers,
-  updateUser,
-  useQueryOptions
-} from '../../lib/helpers';
 
-// import { useQueryClient } from 'react-query';
-// import { deleteUser, getUsers } from '../lib/helpers';
+import { deleteUser, getUsers, useQueryOptions } from '../../lib/helpers';
+import { UserData } from '../../prisma/controller';
 
-const QUERY_KEY = 'users';
+interface IDeleteComponent {
+  deleteHandler: () => void;
+  cancleHandler: () => void;
+  deleteKey: string;
+}
+
+const TABLE_NAME = 'users';
 const FORM_MODE = 'add';
 const SEARCH_KEY = '';
-const INPUT_DATA = [
-  {
-    placeholder: 'Логин'
-  },
-  {
-    placeholder: 'Пароль'
-  },
-  {
-    placeholder: 'Имя пользователя'
-  },
-  {
-    placeholder: 'Права'
-  }
-];
-const FORM_NAMES = ['login', 'password', 'name', 'rights_id'];
+
 export type IFormMode = 'update' | 'add';
 
 export const KeyContext = createContext<{
-  queryKey: string;
   formMode: IFormMode;
-  searchKey: string | number;
-  inputData: IInputData[];
-  formNames: string[];
+  userKey: string;
+  userToUpdate: UserData | undefined;
+  formData: UserData;
+  deleteKey: string;
 
+  setFormData?: Dispatch<SetStateAction<UserData>>;
   setFormMode?: Dispatch<SetStateAction<IFormMode>>;
-  setSearchKey?: Dispatch<SetStateAction<string | number>>;
+  setUserKey?: Dispatch<SetStateAction<string>>;
+  setUserToUpdate?: Dispatch<SetStateAction<UserData | undefined>>;
+  setDeleteKey?: Dispatch<SetStateAction<string>>;
 }>({
-  queryKey: QUERY_KEY,
   formMode: FORM_MODE,
-  searchKey: SEARCH_KEY,
-  inputData: INPUT_DATA,
-  formNames: FORM_NAMES
+  userKey: SEARCH_KEY,
+  userToUpdate: undefined,
+  formData: {} as UserData,
+  deleteKey: ''
 });
 
 export default function DatabaseViewerUsers() {
-  const [queryKey] = useState<string>(QUERY_KEY);
-  const [inputData] = useState<IInputData[]>(INPUT_DATA);
+  const queryClient = useQueryClient();
+
   const [formMode, setFormMode] = useState<IFormMode>(FORM_MODE);
-  const [searchKey, setSearchKey] = useState<string | number>(SEARCH_KEY);
-  const [formNames] = useState<string[]>(FORM_NAMES);
+  const [userKey, setUserKey] = useState<string>(SEARCH_KEY);
+  const [userToUpdate, setUserToUpdate] = useState<UserData | undefined>(
+    undefined
+  );
+  const [formData, setFormData] = useState({} as UserData);
+  const [deleteKey, setDeleteKey] = useState<string>('');
 
   const { data, isLoading, isError } = useQuery(
-    [queryKey],
+    [TABLE_NAME],
     getUsers,
     useQueryOptions
   );
@@ -74,33 +64,51 @@ export default function DatabaseViewerUsers() {
   if (isError || !data)
     return <Error message="Ошибка при получении данных"></Error>;
 
-  const addButtonOnClickHandler = () => {
-    console.log(formMode);
+  const openAddForm = () => {
+    setFormMode(FORM_MODE);
+    setUserKey(SEARCH_KEY);
+    setUserToUpdate(undefined);
+  };
 
-    setFormMode('add');
+  const deleteHandler = async () => {
+    if (deleteKey) {
+      await deleteUser(deleteKey);
+      await queryClient.prefetchQuery('users', getUsers);
+
+      if (deleteKey === userToUpdate?.login) setFormMode('add');
+
+      setDeleteKey('');
+    }
+  };
+
+  const cancleHandler = async () => {
+    setDeleteKey('');
   };
 
   return (
     <section className="py-5">
       <h2 className="text-xl md:text-5xl text-center font-bold py-10">
-        DatabaseViewer
+        Пользователи
       </h2>
 
       <KeyContext.Provider
         value={{
-          queryKey,
           formMode,
-          searchKey,
-          inputData,
-          formNames,
+          userKey,
+          userToUpdate,
+          formData,
+          deleteKey,
+          setFormData,
           setFormMode,
-          setSearchKey
+          setUserKey,
+          setUserToUpdate,
+          setDeleteKey
         }}
       >
         <div className="container mx-auto flex justify-between py-5 border-b">
           <div className="left flex gap-3">
             <button
-              onClick={addButtonOnClickHandler}
+              onClick={openAddForm}
               className="flex bg-indigo-500 text-white px-4 py-2 border rounded-md hover:bg-indigo-300 hover:text-gray-800"
             >
               Добавить
@@ -109,17 +117,16 @@ export default function DatabaseViewerUsers() {
               </span>
             </button>
           </div>
+          {deleteKey ? (
+            DeleteComponent({ deleteHandler, cancleHandler, deleteKey })
+          ) : (
+            <></>
+          )}
         </div>
-        <Form
-          CRUDFunctions={{
-            getAll: getUsers,
-            get: getUser,
-            set: addUser,
-            update: updateUser,
-            delete: deleteUser
-          }}
-        ></Form>
 
+        <div className="h-60 min-w-full">
+          <Form></Form>
+        </div>
         <div className="container mx-auto">
           <Table
             headers={['Логин', 'Пароль', 'Имя пользователя', 'Права']}
@@ -131,38 +138,28 @@ export default function DatabaseViewerUsers() {
   );
 }
 
-// function DeleteComponent({
-//   deleteHandler,
-//   cancleHandler,
-//   deleteId
-// }: {
-//   deleteHandler: () => void;
-//   cancleHandler: () => void;
-//   deleteId: string;
-// }) {
-//   return (
-//     <div className="flex gap-5">
-//       <button>
-//         Удалить <span className="font-bold">{deleteId}</span>?
-//       </button>
-//       <button
-//         onClick={deleteHandler}
-//         className="flex bg-red-500 text-white px-4 py-2 border rounded-md hover:bg-rose-500 hover:border-red-500 hover:text-gray-50"
-//       >
-//         Да{' '}
-//         <span className="px-1">
-//           <BiX color="rgb(255 255 255)" size={25} />
-//         </span>
-//       </button>
-//       <button
-//         onClick={cancleHandler}
-//         className="flex bg-green-500 text-white px-4 py-2 border rounded-md hover:bg-gree-500 hover:border-green-500 hover:text-gray-50"
-//       >
-//         Нет{' '}
-//         <span className="px-1">
-//           <BiCheck color="rgb(255 255 255)" size={25} />
-//         </span>
-//       </button>
-//     </div>
-//   );
-// }
+function DeleteComponent({
+  deleteHandler,
+  cancleHandler,
+  deleteKey
+}: IDeleteComponent) {
+  return (
+    <div className="flex gap-5">
+      <button>
+        Удалить <span className="font-bold">{deleteKey}</span>?
+      </button>
+      <button
+        onClick={deleteHandler}
+        className="flex bg-indigo-500 text-white px-4 py-2 border rounded-md hover:bg-indigo-300 hover:text-gray-800"
+      >
+        Да{' '}
+      </button>
+      <button
+        onClick={cancleHandler}
+        className="flex bg-indigo-500 text-white px-4 py-2 border rounded-md hover:bg-indigo-300 hover:text-gray-800"
+      >
+        Нет{' '}
+      </button>
+    </div>
+  );
+}

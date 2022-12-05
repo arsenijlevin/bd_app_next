@@ -2,14 +2,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import { prisma } from './db';
 
-export interface ICRUDFunctions<T> {
-  getAll: () => Promise<T[]>;
-  get: (key: keyof T) => Promise<T>;
-  set: (data: T) => Promise<T>;
-  update: (key: keyof T, data: T) => Promise<T>;
-  delete: (key: keyof T) => Promise<T>;
-}
-
 export type UserData = {
   login: string;
   password: string;
@@ -25,7 +17,7 @@ export async function getUsers(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json(users);
   } catch (error) {
-    return res.status(500).json({ error: 'Unexpected error happened!' });
+    throw new Error('500');
   }
 }
 
@@ -43,7 +35,7 @@ export async function addUsers(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json({ user: user });
   } catch (error) {
-    return res.status(500).json({ error: 'Unexpected error happened!' });
+    throw new Error('500');
   }
 }
 
@@ -51,8 +43,6 @@ export async function modifyUsers(req: NextApiRequest, res: NextApiResponse) {
   try {
     const formData = JSON.parse(req.body);
     const userLogin: string = formData.userLogin;
-    console.log(formData);
-    console.log(userLogin);
 
     if (!userLogin || !formData) {
       return res.status(404).json({ error: 'Data is not provided' });
@@ -72,7 +62,7 @@ export async function modifyUsers(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json({ user: user });
   } catch (error) {
-    return res.status(500).json({ error: 'Unexpected error happened!' });
+    throw new Error('500');
   }
 }
 
@@ -92,7 +82,7 @@ export async function deleteUsers(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json({ deletedUser: user });
   } catch (error) {
-    return res.status(500).json({ error: 'Unexpected error happened!' });
+    throw new Error('500');
   }
 }
 
@@ -112,6 +102,6 @@ export async function getUser(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json(users);
   } catch (error) {
-    return res.status(500).json({ error: 'Unexpected error happened!' });
+    throw new Error('500');
   }
 }
