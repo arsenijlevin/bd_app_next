@@ -1,72 +1,73 @@
-import { ChangeEvent, Dispatch, FormEvent } from 'react';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { getUser, getUsers, updateUser } from '../lib/helpers';
+import { ChangeEvent, FormEvent, useContext } from 'react';
+import { useMutation, useQueryClient } from 'react-query';
+import { getUsers, updateUser } from '../lib/helpers';
+import { KeyContext } from '../pages/database-viewer/users';
+
 import { UserData } from '../prisma/controller';
-import { UserFormData } from './AddDataForm';
 import Error from './Error';
+import Loading from './Loading';
 import Success from './Success';
 
-export default function UpdateDataForm({
-  userLogin,
-  formData,
-  setFormData
-}: {
-  userLogin: string;
-  formData: UserFormData;
-  setFormData: Dispatch<ChangeEvent<HTMLInputElement>>;
-}) {
+interface IUpdateForm {
+  userToUpdate: UserData | undefined;
+}
+
+export default function UpdateDataForm({ userToUpdate }: IUpdateForm) {
+  const { formData, setFormData, setFormMode } = useContext(KeyContext);
+
   const queryClient = useQueryClient();
-  const { isLoading, isError, data } = useQuery(['users', userLogin], () =>
-    getUser(userLogin)
-  );
+
   const updateMutation = useMutation(
-    (newData: UserData) => updateUser(userLogin, newData),
+    (newData: UserData) => updateUser(userToUpdate?.login, newData),
     {
       onSuccess: async () => {
         queryClient.prefetchQuery('users', getUsers);
-        console.log('COMPLETE');
+      },
+      onError: async () => {
+        updateMutation.isError = true;
       }
     }
   );
-
-  if (isLoading) return <div>Loading...!</div>;
-  if (isError) return <div>Error</div>;
-
-  const { login, password, name, rights_id } = data;
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
     if (Object.values(formData).every(value => !value))
-      return console.error('Форма пуста');
-    console.log(parseInt(rights_id), rights_id);
+      return <div>Необходимо заполнить форму</div>;
 
-    const model = Object.assign({}, data, formData, {
-      rights_id: isNaN(parseInt(formData.rights_id))
-        ? rights_id
-        : parseInt(formData.rights_id)
-    });
+    const model = Object.assign({}, userToUpdate, formData);
 
     updateMutation.mutate(model);
+
+    setTimeout(() => {
+      updateMutation.reset();
+      setFormData && setFormData({} as UserData);
+      setFormMode && setFormMode('add');
+    }, 2000);
   };
 
-  if (updateMutation.isLoading) return <div>Loading!</div>;
+  if (updateMutation.isLoading || !userToUpdate) return <Loading></Loading>;
   if (updateMutation.isError)
-    return <Error message={`Произошла ошибка!`}></Error>;
-  if (updateMutation.isSuccess) return <Success message={'Успешно!'}></Success>;
+    return <Error message="Ошибка при выполнении запроса"></Error>;
+
+  if (updateMutation.isSuccess) return <Success message="Успешно!"></Success>;
+
+  const { login, password, name, rights_id } = userToUpdate;
 
   return (
-    <div>
-      <h4 className="mb-3">
-        Редактируется: <span className="font-bold">{userLogin || ''}</span>
-      </h4>
+    <div key={userToUpdate.login}>
       <form className="grid lg:grid-cols-2 w-2/3 gap-4" onSubmit={handleSubmit}>
         <div className="input-type">
           <input
             type="text"
-            onChange={setFormData}
-            defaultValue={login || ''}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setFormData &&
+                setFormData(
+                  Object.assign(formData, { login: event.target.value })
+                );
+            }}
             name="login"
+            defaultValue={login}
             placeholder="Логин"
             className="border w-full px-5 py-3 focus:outline-none rounded-md"
           />
@@ -74,9 +75,14 @@ export default function UpdateDataForm({
         <div className="input-type">
           <input
             type="text"
-            defaultValue={password || ''}
-            onChange={setFormData}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setFormData &&
+                setFormData(
+                  Object.assign(formData, { password: event.target.value })
+                );
+            }}
             name="password"
+            defaultValue={password}
             placeholder="Пароль"
             className="border w-full px-5 py-3 focus:outline-none rounded-md"
           />
@@ -84,18 +90,28 @@ export default function UpdateDataForm({
         <div className="input-type">
           <input
             type="text"
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setFormData &&
+                setFormData(
+                  Object.assign(formData, { name: event.target.value })
+                );
+            }}
+            defaultValue={name}
             name="name"
-            defaultValue={name || ''}
-            onChange={setFormData}
             placeholder="Имя пользователя"
             className="border w-full px-5 py-3 focus:outline-none rounded-md"
           />
         </div>
         <div className="input-type">
           <input
-            type="text"
-            onChange={setFormData}
-            defaultValue={rights_id || ''}
+            type="number"
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setFormData &&
+                setFormData(
+                  Object.assign(formData, { rights_id: event.target.value })
+                );
+            }}
+            defaultValue={rights_id}
             name="rights_id"
             placeholder="Права"
             className="border w-full px-5 py-3 focus:outline-none rounded-md"
@@ -106,6 +122,9 @@ export default function UpdateDataForm({
           Обновить
         </button>
       </form>
+      <h4 className="mb-3 mt-2">
+        Редактируется: <span className="font-bold">{login}</span>
+      </h4>
     </div>
   );
 }

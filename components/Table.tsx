@@ -1,86 +1,71 @@
+import { useContext } from 'react';
 import { BiEdit, BiTrashAlt } from 'react-icons/bi';
-
+import { KeyContext } from '../pages/database-viewer/users';
 import { UserData } from '../prisma/controller';
 
-import { useSelector, useDispatch } from 'react-redux';
-import { deleteAction, InitialState, updateAction } from '../redux/reducer';
+interface ITableProps {
+  headers: string[];
+  data: UserData[];
+}
 
-import { toggleChangeAction } from '../redux/reducer';
-import { useQuery } from 'react-query';
-import { getUsers } from '../lib/helpers';
+interface ITableHeaderProps {
+  headers: string[];
+}
 
-import Error from './Error';
-
-export default function Table() {
-  const { isLoading, isError, data } = useQuery('users', getUsers);
-
-  if (isLoading) return <div>Загрузка...</div>;
-  if (isError) return <Error message="Произошла ошибка"></Error>;
-
+export default function Table({ headers, data }: ITableProps) {
   return (
     <table className="min-w-full table-auto">
-      <thead>
-        <tr className="bg-gray-800">
-          <th className="px-16 py-2">
-            <span className="text-gray-200">Логин</span>
-          </th>
-          <th className="px-16 py-2">
-            <span className="text-gray-200">Пароль</span>
-          </th>
-          <th className="px-16 py-2">
-            <span className="text-gray-200">Имя пользователя</span>
-          </th>
-          <th className="px-16 py-2">
-            <span className="text-gray-200">Права</span>
-          </th>
-          <th className="px-16 py-2">
-            <span className="text-gray-200">Действия</span>
-          </th>
-        </tr>
-      </thead>
+      <TableHeader headers={headers}></TableHeader>
       <tbody className="bg-gray-200">
         {data.map((object: UserData, index: number) => (
-          <Tr {...object} key={index} />
+          <TableRow key={index} {...object} />
         ))}
       </tbody>
     </table>
   );
 }
 
-function Tr(data: UserData) {
-  const visible = useSelector(
-    (state: { app: InitialState }) => state.app.client.toggleForm
+function TableHeader({ headers }: ITableHeaderProps) {
+  return (
+    <thead>
+      <tr className="bg-gray-800">
+        {headers.map((header: string, index: number) => (
+          <th className="px-16 py-2" key={index}>
+            <span className="text-gray-200">{header}</span>
+          </th>
+        ))}
+        <th className="px-16 py-2">
+          <span className="text-gray-200">Действия</span>
+        </th>
+      </tr>
+    </thead>
   );
-  const dispatch = useDispatch();
+}
+
+function TableRow(data: UserData) {
+  const { setUserKey, setFormMode, setUserToUpdate, setDeleteKey } =
+    useContext(KeyContext);
 
   const onUpdate = () => {
-    dispatch(toggleChangeAction());
-
-    if (!visible) {
-      dispatch(updateAction(data.login));
-    }
+    setFormMode && setFormMode('update');
+    setUserKey && setUserKey(data.login);
+    setUserToUpdate && setUserToUpdate(data);
   };
 
   const onDelete = () => {
-    if (!visible) {
-      dispatch(deleteAction(data.login));
-    }
+    setDeleteKey && setDeleteKey(data.login);
   };
 
   return (
     <tr className="bg-gray-50 text-center">
-      <td className="px-16 py-2 flex flex-row items-center">
-        <span>{data.login}</span>
-      </td>
-      <td className="px-16 py-2 break-words max-w-sm">
-        <span>{data.password}</span>
-      </td>
-      <td className="px-16 py-2 break-words max-w-sm">
-        <span>{data.name}</span>
-      </td>
-      <td className="px-16 py-2">
-        <span>{data.rights_id}</span>
-      </td>
+      {Object.values(data).map((value, index: number) => {
+        return (
+          <td className="px-16 py-2" key={index}>
+            <span>{value}</span>
+          </td>
+        );
+      })}
+
       <td className="px-16 py-2 flex justify-around gap-1">
         <button className="cursor" onClick={onUpdate}>
           <BiEdit size={25} color={'rgb(34, 197, 94)'}></BiEdit>

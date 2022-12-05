@@ -7,8 +7,8 @@ export default function modify(req: NextApiRequest, res: NextApiResponse) {
   }
 
   return modifyUsers(req, res)
-    .then(() => res.end())
     .catch(() => {
-      throw new Error();
-    });
+      res.status(500).json({ message: 'Unexpected error happened' });
+    })
+    .finally(() => res.end());
 }

@@ -1,30 +1,35 @@
-import AddDataForm, { UserFormData } from './AddDataForm';
-import { useSelector } from 'react-redux';
-import { ChangeEvent, useReducer } from 'react';
-import { InitialState } from '../redux/reducer';
+import AddDataForm from './AddDataForm';
+
+import { useContext, useEffect } from 'react';
+
 import UpdateDataForm from './UpdateDataForm';
 
-const formReducer = (
-  state: UserFormData,
-  event: ChangeEvent<HTMLInputElement>
-) => {
-  return {
-    ...state,
-    [event.target.name]: event.target.value
-  };
-};
+import { KeyContext } from '../pages/database-viewer/users';
+import { useQuery } from 'react-query';
+import { getUser, useQueryOptions } from '../lib/helpers';
 
 export default function Form() {
-  const [formData, setFormData] = useReducer(formReducer, {} as UserFormData);
-  const userLogin = useSelector(
-    (state: { app: InitialState }) => state.app.client.userLogin
+  const { formMode, userKey, setUserToUpdate, userToUpdate } =
+    useContext(KeyContext);
+
+  const { data } = useQuery(
+    ['users', userKey],
+    async () => getUser(userKey),
+
+    useQueryOptions
   );
+
+  useEffect(() => {
+    setUserToUpdate && setUserToUpdate(data);
+  }, [setUserToUpdate, data, userToUpdate]);
 
   return (
     <div className="container mx-auto py-5">
-      {userLogin
-        ? UpdateDataForm({ userLogin, formData, setFormData })
-        : AddDataForm({ formData, setFormData })}
+      {formMode === 'update'
+        ? UpdateDataForm({
+            userToUpdate: userToUpdate
+          })
+        : AddDataForm()}
     </div>
   );
 }
