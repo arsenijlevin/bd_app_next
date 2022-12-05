@@ -5,6 +5,7 @@ import { BiUserPlus } from 'react-icons/bi';
 import { useQuery } from 'react-query';
 import Error from '../../components/Error';
 import Form from '../../components/Form';
+import Loading from '../../components/Loading';
 import Table from '../../components/Table';
 import { IInputData } from '../../components/UpdateDataForm';
 import {
@@ -63,9 +64,15 @@ export default function DatabaseViewerUsers() {
   const [searchKey, setSearchKey] = useState<string | number>(SEARCH_KEY);
   const [formNames] = useState<string[]>(FORM_NAMES);
 
-  const { data } = useQuery([queryKey], getUsers, useQueryOptions);
+  const { data, isLoading, isError } = useQuery(
+    [queryKey],
+    getUsers,
+    useQueryOptions
+  );
 
-  if (!data) return <Error message="Ошибка при получении данных"></Error>;
+  if (isLoading) return <Loading></Loading>;
+  if (isError || !data)
+    return <Error message="Ошибка при получении данных"></Error>;
 
   const addButtonOnClickHandler = () => {
     console.log(formMode);
