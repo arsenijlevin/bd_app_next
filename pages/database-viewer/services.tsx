@@ -13,6 +13,7 @@ import { useQueryOptions } from '../../lib/useQueryOptions';
 import { ServiceData } from '../../prisma/controllers/servicesController';
 import { IFormMode } from '../../lib/interfaces/IFormMode';
 import { IDeleteComponent } from '../../lib/interfaces/IDeleteComponent';
+import Head from 'next/head';
 
 const TABLE_NAME = 'services';
 const FORM_MODE = 'add';
@@ -82,6 +83,9 @@ export default function DatabaseViewerServices() {
 
   return (
     <section className="py-5">
+      <Head>
+        <title>Список услуг</title>
+      </Head>
       <h2 className="text-xl md:text-5xl text-center font-bold py-10">
         Список услуг
       </h2>

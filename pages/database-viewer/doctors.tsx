@@ -13,6 +13,7 @@ import { useQueryOptions } from '../../lib/useQueryOptions';
 import { DoctorData } from '../../prisma/controllers/doctorsController';
 import { IFormMode } from '../../lib/interfaces/IFormMode';
 import { IDeleteComponent } from '../../lib/interfaces/IDeleteComponent';
+import Head from 'next/head';
 
 const TABLE_NAME = 'doctors';
 const FORM_MODE = 'add';
@@ -82,6 +83,9 @@ export default function DatabaseViewerDoctors() {
 
   return (
     <section className="py-5">
+      <Head>
+        <title>Врачи</title>
+      </Head>
       <h2 className="text-xl md:text-5xl text-center font-bold py-10">Врачи</h2>
 
       <KeyDoctorsContext.Provider
