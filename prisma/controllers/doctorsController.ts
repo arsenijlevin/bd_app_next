@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { IDoctorData } from '../interfaces';
 import { prisma } from '../db';
+import { parseIntIfValueIsString } from '../../lib/parseIntIfValueIsString';
 
 export type DoctorData = IDoctorData;
 
@@ -37,7 +38,8 @@ export async function addDoctors(req: NextApiRequest, res: NextApiResponse) {
 export async function modifyDoctors(req: NextApiRequest, res: NextApiResponse) {
   try {
     const formData = JSON.parse(req.body);
-    const doctorId: number = formData.doctorId;
+    const doctorId: number = formData.id;
+    console.log(formData);
 
     if (!doctorId || !formData) {
       return res.status(404).json({ error: 'Data is not provided' });
@@ -64,14 +66,18 @@ export async function deleteDoctors(req: NextApiRequest, res: NextApiResponse) {
       return res.status(404).json({ error: 'Data is not provided' });
     }
 
+    console.log('asdasddas', parseIntIfValueIsString(doctorId));
+
     const doctor = await prisma.doctors.delete({
       where: {
-        id: doctorId
+        id: parseIntIfValueIsString(doctorId)
       }
     });
 
     return res.status(200).json({ deletedDoctor: doctor });
   } catch (error) {
+    console.log(error);
+
     throw new Error('500');
   }
 }
@@ -86,7 +92,7 @@ export async function getDoctor(req: NextApiRequest, res: NextApiResponse) {
 
     const doctors = await prisma.doctors.findFirst({
       where: {
-        id: doctorId
+        id: parseIntIfValueIsString(doctorId)
       }
     });
 

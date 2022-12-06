@@ -16,7 +16,7 @@ export const getDoctors = async (): Promise<DoctorData[]> => {
 };
 
 export const getDoctor = async (
-  doctorId: string
+  doctorId: number
 ): Promise<DoctorData | undefined> => {
   if (!doctorId) return undefined;
 
@@ -36,7 +36,9 @@ export const addDoctor = async (formData: DoctorData) => {
     id: parseIntIfValueIsString(formData.id),
     specialty_id: parseIntIfValueIsString(formData.specialty_id),
     department_id: parseIntIfValueIsString(formData.department_id),
-    salary: new Prisma.Decimal(formData.salary),
+    salary: new Prisma.Decimal(
+      parseIntIfValueIsString(formData.salary.toString())
+    ),
     name: formData.name,
     surname: formData.surname,
     patronymic: formData.patronymic
@@ -62,7 +64,7 @@ export const addDoctor = async (formData: DoctorData) => {
 };
 
 export const updateDoctor = async (
-  doctorId: string | undefined,
+  doctorId: number | undefined,
   formData: DoctorData
 ) => {
   if (!doctorId) return {} as DoctorData;
@@ -71,7 +73,9 @@ export const updateDoctor = async (
     id: parseIntIfValueIsString(doctorId),
     specialty_id: parseIntIfValueIsString(formData.specialty_id),
     department_id: parseIntIfValueIsString(formData.department_id),
-    salary: new Prisma.Decimal(formData.salary),
+    salary: new Prisma.Decimal(
+      parseIntIfValueIsString(formData.salary.toString())
+    ),
     name: formData.name,
     surname: formData.surname,
     patronymic: formData.patronymic
@@ -95,14 +99,20 @@ export const updateDoctor = async (
   return {};
 };
 
-export const deleteDoctor = async (doctorId: string) => {
+export const deleteDoctor = async (doctorId: number) => {
   const options = {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      doctorId: `${doctorId}`
+      doctorId: doctorId
     })
   };
+
+  console.log(
+    JSON.stringify({
+      doctorId: doctorId
+    })
+  );
 
   return await (
     await fetch(

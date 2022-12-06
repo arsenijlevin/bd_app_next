@@ -22,8 +22,8 @@ model doctors {
   name              String              @db.VarChar(255)
   surname           String              @db.VarChar(255)
   patronymic        String?             @db.VarChar(255)
-  departments       departments         @relation(fields: [department_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "department_id")
-  specialties       specialties         @relation(fields: [specialty_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "specialty_id")
+  departments       departments         @relation(fields: [department_id], references: [id], onDelete: NoAction, map: "department_id")
+  specialties       specialties         @relation(fields: [specialty_id], references: [id], onDelete: NoAction, map: "specialty_id")
   rendered_services rendered_services[]
 
   @@index([department_id], map: "department_id_idx")
@@ -48,9 +48,9 @@ model rendered_services {
   patient_id Int      @db.UnsignedInt
   service_id Int      @db.UnsignedInt
   result     String   @db.Text
-  doctors    doctors  @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "doctor_id")
-  patients   patients @relation(fields: [patient_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "patient_id")
-  services   services @relation(fields: [service_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "service_id")
+  doctors    doctors  @relation(fields: [doctor_id], references: [id], onDelete: NoAction, map: "doctor_id")
+  patients   patients @relation(fields: [patient_id], references: [id], onDelete: NoAction, map: "patient_id")
+  services   services @relation(fields: [service_id], references: [id], onDelete: NoAction, map: "service_id")
 
   @@id([date_time, doctor_id])
   @@index([doctor_id], map: "doctor_id_idx")

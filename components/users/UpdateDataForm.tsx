@@ -1,7 +1,7 @@
 import { ChangeEvent, FormEvent, useContext } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import { getUsers, updateUser } from '../../lib/users/helpers';
-import { KeyContext } from '../../pages/database-viewer/users';
+import { KeyUsersContext } from '../../pages/database-viewer/users';
 
 import { UserData } from '../../prisma/controllers/usersController';
 import Error from '../utility/Error';
@@ -13,7 +13,7 @@ interface IUpdateForm {
 }
 
 export default function UpdateDataForm({ userToUpdate }: IUpdateForm) {
-  const { formData, setFormData, setFormMode } = useContext(KeyContext);
+  const { formData, setFormData, setFormMode } = useContext(KeyUsersContext);
 
   const queryClient = useQueryClient();
 

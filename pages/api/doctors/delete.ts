@@ -5,6 +5,7 @@ export default function deleteData(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'DELETE') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
+  console.log(req.body);
 
   return deleteDoctors(req, res)
     .catch(() => {
