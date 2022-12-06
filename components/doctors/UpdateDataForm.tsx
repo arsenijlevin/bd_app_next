@@ -38,7 +38,6 @@ export default function UpdateDataForm({ doctorToUpdate }: IUpdateForm) {
     const model = Object.assign({}, doctorToUpdate, formData);
 
     updateMutation.mutate(model);
-    console.log(model);
 
     setTimeout(() => {
       updateMutation.reset();

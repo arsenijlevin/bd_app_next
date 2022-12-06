@@ -39,7 +39,6 @@ export async function modifyDoctors(req: NextApiRequest, res: NextApiResponse) {
   try {
     const formData = JSON.parse(req.body);
     const doctorId: number = formData.id;
-    console.log(formData);
 
     if (!doctorId || !formData) {
       return res.status(404).json({ error: 'Data is not provided' });
@@ -66,8 +65,6 @@ export async function deleteDoctors(req: NextApiRequest, res: NextApiResponse) {
       return res.status(404).json({ error: 'Data is not provided' });
     }
 
-    console.log('asdasddas', parseIntIfValueIsString(doctorId));
-
     const doctor = await prisma.doctors.delete({
       where: {
         id: parseIntIfValueIsString(doctorId)
@@ -76,8 +73,6 @@ export async function deleteDoctors(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json({ deletedDoctor: doctor });
   } catch (error) {
-    console.log(error);
-
     throw new Error('500');
   }
 }

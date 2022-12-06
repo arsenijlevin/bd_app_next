@@ -108,12 +108,6 @@ export const deleteDoctor = async (doctorId: number) => {
     })
   };
 
-  console.log(
-    JSON.stringify({
-      doctorId: doctorId
-    })
-  );
-
   return await (
     await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}api/doctors/delete`,
