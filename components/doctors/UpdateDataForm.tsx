@@ -38,7 +38,6 @@ export default function UpdateDataForm({ doctorToUpdate }: IUpdateForm) {
     const model = Object.assign({}, doctorToUpdate, formData);
 
     updateMutation.mutate(model);
-    console.log(model);
 
     setTimeout(() => {
       updateMutation.reset();
@@ -109,7 +108,7 @@ export default function UpdateDataForm({ doctorToUpdate }: IUpdateForm) {
             }}
             defaultValue={salary.toString()}
             name="salary"
-            placeholder="Зарплата"
+            placeholder="Зарплата, руб."
             className="border w-full px-5 py-3 focus:outline-none rounded-md"
           />
         </div>

@@ -1,11 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { deleteDoctors } from '../../../prisma/controllers/doctorsController';
+import { addServices } from '../../../prisma/controllers/servicesController';
 
-export default function deleteData(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'DELETE') {
+export default function add(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
-  return deleteDoctors(req, res)
+
+  return addServices(req, res)
     .catch(() => {
       res.status(500).json({ message: 'Unexpected error happened' });
     })
