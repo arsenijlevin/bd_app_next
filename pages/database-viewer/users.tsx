@@ -8,7 +8,8 @@ import Form from '../../components/users/Form';
 import Loading from '../../components/utility/Loading';
 import Table from '../../components/users/Table';
 
-import { deleteUser, getUsers, useQueryOptions } from '../../lib/users/helpers';
+import { deleteUser, getUsers } from '../../lib/users/helpers';
+import { useQueryOptions } from '../../lib/useQueryOptions';
 import { UserData } from '../../prisma/controllers/usersController';
 
 interface IDeleteComponent {

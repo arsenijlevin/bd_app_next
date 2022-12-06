@@ -1,18 +1,5 @@
 import { UserData } from '../../prisma/controllers/usersController';
-
-interface IQueryOptions {
-  refetchOnMount: boolean;
-  refetchOnWindowFocus: boolean;
-}
-
-function parseIntIfValueIsString(value: string | number) {
-  return typeof value === 'string' ? parseInt(value) : value;
-}
-
-export const useQueryOptions: IQueryOptions = {
-  refetchOnMount: false,
-  refetchOnWindowFocus: false
-};
+import { parseIntIfValueIsString } from '../parseIntIfValueIsString';
 
 export const getUsers = async (): Promise<UserData[]> => {
   const options = {
