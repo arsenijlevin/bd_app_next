@@ -11,8 +11,8 @@ import Table from '../../components/doctors/Table';
 import { deleteDoctor, getDoctors } from '../../lib/doctors/helpers';
 import { useQueryOptions } from '../../lib/useQueryOptions';
 import { DoctorData } from '../../prisma/controllers/doctorsController';
-import { IFormMode } from '../../lib/IFormMode';
-import { IDeleteComponent } from '../../lib/IDeleteComponent';
+import { IFormMode } from '../../lib/interfaces/IFormMode';
+import { IDeleteComponent } from '../../lib/interfaces/IDeleteComponent';
 
 const TABLE_NAME = 'doctors';
 const FORM_MODE = 'add';

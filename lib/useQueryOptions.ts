@@ -1,4 +1,4 @@
-import { IQueryOptions } from './IQueryOptions';
+import { IQueryOptions } from './interfaces/IQueryOptions';
 
 export const useQueryOptions: IQueryOptions = {
   refetchOnMount: false,
