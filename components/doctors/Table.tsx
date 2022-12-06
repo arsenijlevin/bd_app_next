@@ -1,11 +1,11 @@
 import { useContext } from 'react';
 import { BiEdit, BiTrashAlt } from 'react-icons/bi';
-import { KeyContext } from '../pages/database-viewer/users';
-import { UserData } from '../prisma/controller';
+import { KeyDoctorsContext } from '../../pages/database-viewer/doctors';
+import { DoctorData } from '../../prisma/controllers/doctorsController';
 
 interface ITableProps {
   headers: string[];
-  data: UserData[];
+  data: DoctorData[];
 }
 
 interface ITableHeaderProps {
@@ -17,7 +17,7 @@ export default function Table({ headers, data }: ITableProps) {
     <table className="min-w-full table-auto">
       <TableHeader headers={headers}></TableHeader>
       <tbody className="bg-gray-200">
-        {data.map((object: UserData, index: number) => (
+        {data.map((object: DoctorData, index: number) => (
           <TableRow key={index} {...object} />
         ))}
       </tbody>
@@ -42,18 +42,19 @@ function TableHeader({ headers }: ITableHeaderProps) {
   );
 }
 
-function TableRow(data: UserData) {
-  const { setUserKey, setFormMode, setUserToUpdate, setDeleteKey } =
-    useContext(KeyContext);
+function TableRow(data: DoctorData) {
+  const { setDoctorKey, setFormMode, setDoctorToUpdate, setDeleteKey } =
+    useContext(KeyDoctorsContext);
 
   const onUpdate = () => {
     setFormMode && setFormMode('update');
-    setUserKey && setUserKey(data.login);
-    setUserToUpdate && setUserToUpdate(data);
+    setDoctorKey && setDoctorKey(data.id);
+    setDoctorToUpdate && setDoctorToUpdate(data);
+    window.scrollTo(0, 0);
   };
 
   const onDelete = () => {
-    setDeleteKey && setDeleteKey(data.login);
+    setDeleteKey && setDeleteKey(data.id);
   };
 
   return (
@@ -61,7 +62,7 @@ function TableRow(data: UserData) {
       {Object.values(data).map((value, index: number) => {
         return (
           <td className="px-16 py-2" key={index}>
-            <span>{value}</span>
+            <span>{value?.toString()}</span>
           </td>
         );
       })}

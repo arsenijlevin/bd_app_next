@@ -1,13 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { IUserData } from '../interfaces';
+import { prisma } from '../db';
 
-import { prisma } from './db';
-
-export type UserData = {
-  login: string;
-  password: string;
-  name: string;
-  rights_id: number;
-};
+export type UserData = IUserData;
 
 export async function getUsers(req: NextApiRequest, res: NextApiResponse) {
   try {

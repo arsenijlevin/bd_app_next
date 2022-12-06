@@ -1,12 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { addUsers } from '../../../prisma/controllers/usersController';
+import { modifyDoctors } from '../../../prisma/controllers/doctorsController';
 
-export default function add(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
+export default function modify(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'PUT') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  return addUsers(req, res)
+  return modifyDoctors(req, res)
     .catch(() => {
       res.status(500).json({ message: 'Unexpected error happened' });
     })
