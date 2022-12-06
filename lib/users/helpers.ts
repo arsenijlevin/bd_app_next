@@ -1,4 +1,4 @@
-import { UserData } from '../prisma/controller';
+import { UserData } from '../../prisma/controllers/usersController';
 
 interface IQueryOptions {
   refetchOnMount: boolean;

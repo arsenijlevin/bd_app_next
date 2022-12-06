@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getUser } from '../../../prisma/controller';
+import { getUser } from '../../../prisma/controllers/usersController';
 
 export default function get(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { deleteUsers } from '../../../prisma/controller';
+import { deleteUsers } from '../../../prisma/controllers/usersController';
 
 export default function deleteData(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'DELETE') {

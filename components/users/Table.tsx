@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { BiEdit, BiTrashAlt } from 'react-icons/bi';
-import { KeyContext } from '../pages/database-viewer/users';
-import { UserData } from '../prisma/controller';
+import { KeyContext } from '../../pages/database-viewer/users';
+import { UserData } from '../../prisma/controllers/usersController';
 
 interface ITableProps {
   headers: string[];

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { modifyUsers } from '../../../prisma/controller';
+import { modifyUsers } from '../../../prisma/controllers/usersController';
 
 export default function modify(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'PUT') {

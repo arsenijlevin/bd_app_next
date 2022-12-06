@@ -3,13 +3,13 @@
 import { createContext, Dispatch, SetStateAction, useState } from 'react';
 import { BiUserPlus } from 'react-icons/bi';
 import { useQuery, useQueryClient } from 'react-query';
-import Error from '../../components/Error';
-import Form from '../../components/Form';
-import Loading from '../../components/Loading';
-import Table from '../../components/Table';
+import Error from '../../components/utility/Error';
+import Form from '../../components/users/Form';
+import Loading from '../../components/utility/Loading';
+import Table from '../../components/users/Table';
 
-import { deleteUser, getUsers, useQueryOptions } from '../../lib/helpers';
-import { UserData } from '../../prisma/controller';
+import { deleteUser, getUsers, useQueryOptions } from '../../lib/users/helpers';
+import { UserData } from '../../prisma/controllers/usersController';
 
 interface IDeleteComponent {
   deleteHandler: () => void;

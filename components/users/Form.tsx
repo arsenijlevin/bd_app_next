@@ -4,9 +4,9 @@ import { useContext, useEffect } from 'react';
 
 import UpdateDataForm from './UpdateDataForm';
 
-import { KeyContext } from '../pages/database-viewer/users';
+import { KeyContext } from '../../pages/database-viewer/users';
 import { useQuery } from 'react-query';
-import { getUser, useQueryOptions } from '../lib/helpers';
+import { getUser, useQueryOptions } from '../../lib/users/helpers';
 
 export default function Form() {
   const { formMode, userKey, setUserToUpdate, userToUpdate } =
