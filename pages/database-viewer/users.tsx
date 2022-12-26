@@ -11,6 +11,7 @@ import Table from '../../components/users/Table';
 import { deleteUser, getUsers } from '../../lib/users/helpers';
 import { useQueryOptions } from '../../lib/useQueryOptions';
 import { UserData } from '../../prisma/controllers/usersController';
+import Head from 'next/head';
 
 interface IDeleteComponent {
   deleteHandler: () => void;
@@ -88,6 +89,9 @@ export default function DatabaseViewerUsers() {
 
   return (
     <section className="py-5">
+      <Head>
+        <title>Пользователи</title>
+      </Head>
       <h2 className="text-xl md:text-5xl text-center font-bold py-10">
         Пользователи
       </h2>

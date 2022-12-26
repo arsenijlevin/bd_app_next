@@ -1,6 +1,11 @@
+import Head from 'next/head';
+
 export default function DatabaseViewer() {
   return (
     <section className="py-5">
+      <Head>
+        <title>Админ-панель</title>
+      </Head>
       <h2 className="text-xl md:text-5xl text-center font-bold py-10">
         Админ-панель
       </h2>
