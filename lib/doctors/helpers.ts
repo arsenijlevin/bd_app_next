@@ -1,4 +1,4 @@
-import { doctors, Prisma } from '@prisma/client';
+import { doctors, patients, Prisma } from '@prisma/client';
 import { DoctorData } from '../../prisma/controllers/doctorsController';
 import { parseIntIfValueIsString } from '../parseIntIfValueIsString';
 
@@ -119,5 +119,11 @@ export const deleteDoctor = async (doctorId: number) => {
 export const doctorToString = (doctor: doctors) => {
   return `(${doctor.id}) ${doctor.surname} ${doctor.name} ${
     doctor.patronymic || ''
+  }`;
+};
+
+export const patientToString = (patient: patients) => {
+  return `(${patient.id}) ${patient.surname} ${patient.name} ${
+    patient.patronymic || ''
   }`;
 };
