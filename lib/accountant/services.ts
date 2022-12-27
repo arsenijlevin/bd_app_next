@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { renderedServicesJoined } from '../../prisma/controllers/accountantController';
 
 export const getServicesByDate = async (
@@ -39,12 +40,19 @@ export const getServicesByDateAndDepartment = async (
     })
   };
 
-  return await (
+  const renderedServices: renderedServicesJoined[] = await (
     await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}api/accountant/getServicesByDateAndDepartment`,
       options
     )
   ).json();
+
+  return renderedServices.map(service => {
+    service.date_time = DateTime.fromISO(
+      service.date_time.toString()
+    ).toJSDate();
+    return service;
+  });
 };
 
 export const getServicesByDateAndDoctor = async (
@@ -65,10 +73,17 @@ export const getServicesByDateAndDoctor = async (
     })
   };
 
-  return await (
+  const renderedServices: renderedServicesJoined[] = await (
     await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}api/accountant/getServicesByDateAndDoctor`,
       options
     )
   ).json();
+
+  return renderedServices.map(service => {
+    service.date_time = DateTime.fromISO(
+      service.date_time.toString()
+    ).toJSDate();
+    return service;
+  });
 };

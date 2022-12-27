@@ -2,8 +2,10 @@ import { DateTime } from 'luxon';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { ChangeEvent, FormEvent, useState } from 'react';
+import ServicesInfo from '../../components/accountant/ServicesInfo';
+import Table from '../../components/accountant/Table';
 import { getServicesByDateAndDoctor } from '../../lib/accountant/services';
-import { doctorToString, patientToString } from '../../lib/doctors/helpers';
+import { doctorToString } from '../../lib/doctors/helpers';
 import { renderedServicesJoined } from '../../prisma/controllers/accountantController';
 import { prisma } from '../../prisma/db';
 
@@ -116,18 +118,27 @@ export default function Accountant({ doctors }: IAccountantDoctorsPageProps) {
           </button>
         </div>
       </form>
+
+      {servicesData.length > 0 && (
+        <ServicesInfo services={servicesData}></ServicesInfo>
+      )}
+
       <div className="container mx-auto flex justify-between py-5 flex-col gap-2">
         <h3>Результат: </h3>
-        {servicesData.length > 0 &&
-          servicesData.map((service, index) => {
-            return (
-              <div key={index} className="flex flex-row gap-2">
-                <p>{service.date_time.toString()}</p>
-                <p>{doctorToString(service.doctors)}</p>
-                <p>{patientToString(service.patients)}</p>
-              </div>
-            );
-          })}
+
+        {servicesData.length > 0 && formData.doctorId !== -1 && (
+          <Table
+            headers={[
+              'Дата и время',
+              'Услуга',
+              'Специалист',
+              'Пациент',
+              'Стоимость услуги',
+              'Результат'
+            ]}
+            data={servicesData}
+          ></Table>
+        )}
       </div>
     </section>
   );
