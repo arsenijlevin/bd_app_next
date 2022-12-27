@@ -5,8 +5,6 @@ interface IServicesInfoProps {
 }
 
 export default function ServicesInfo({ services }: IServicesInfoProps) {
-  console.log(services);
-
   return (
     <div>
       <h3>Сводная информация: </h3>

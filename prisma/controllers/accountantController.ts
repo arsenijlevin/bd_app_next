@@ -32,9 +32,6 @@ export async function getServicesByDateHandler(
       .plus({ hours: 3 })
       .toJSDate();
 
-    console.log('lte', gte);
-    console.log('gte', lte);
-
     const services = await prisma.rendered_services.findMany({
       where: {
         date_time: {
@@ -53,8 +50,6 @@ export async function getServicesByDateHandler(
 
     return res.status(200).json(services);
   } catch (error) {
-    console.log(error);
-
     throw new Error('500');
   }
 }
@@ -74,9 +69,6 @@ export async function getServicesByDateAndDepartmentHandler(
       .endOf('month')
       .plus({ hours: 3 })
       .toJSDate();
-
-    console.log('lte', gte);
-    console.log('gte', lte);
 
     const services = await prisma.rendered_services.findMany({
       where: {
@@ -102,8 +94,6 @@ export async function getServicesByDateAndDepartmentHandler(
 
     return res.status(200).json(services);
   } catch (error) {
-    console.log(error);
-
     throw new Error('500');
   }
 }
@@ -123,9 +113,6 @@ export async function getServicesByDateAndDoctorHandler(
       .endOf('month')
       .plus({ hours: 3 })
       .toJSDate();
-
-    console.log('lte', gte);
-    console.log('gte', lte);
 
     const services = await prisma.rendered_services.findMany({
       where: {
@@ -151,8 +138,6 @@ export async function getServicesByDateAndDoctorHandler(
 
     return res.status(200).json(services);
   } catch (error) {
-    console.log(error);
-
     throw new Error('500');
   }
 }

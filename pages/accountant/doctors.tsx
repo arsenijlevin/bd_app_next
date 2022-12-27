@@ -19,7 +19,7 @@ interface IAccountantDoctorsPageProps {
 export const getServerSideProps: GetServerSideProps<
   IAccountantDoctorsPageProps
 > = async () => {
-  const doctors = await prisma?.doctors.findMany();
+  const doctors = await prisma.doctors.findMany();
 
   return {
     props: {
@@ -43,20 +43,15 @@ export default function Accountant({ doctors }: IAccountantDoctorsPageProps) {
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
-    console.log(servicesData);
-    console.log(formData.date);
-
     setServicesData(
       await getServicesByDateAndDoctor(formData.date, formData.doctorId)
     );
-
-    console.log(servicesData);
   };
 
   return (
     <section className="py-5 container mx-auto">
       <Head>
-        <title>Генерация отчётов</title>
+        <title>Генерация отчётов - врачи</title>
       </Head>
       <h2 className="text-xl md:text-5xl text-center font-bold py-10">
         Генерация отчётов
@@ -86,8 +81,6 @@ export default function Accountant({ doctors }: IAccountantDoctorsPageProps) {
             name="doctorId"
             id="doctorId"
             onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-              console.log(event);
-
               setFormData &&
                 setFormData(
                   Object.assign(formData, {

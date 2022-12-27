@@ -18,7 +18,7 @@ interface IAccountantDepartmentsPageProps {
 export const getServerSideProps: GetServerSideProps<
   IAccountantDepartmentsPageProps
 > = async () => {
-  const departments = await prisma?.departments.findMany({});
+  const departments = await prisma.departments.findMany({});
 
   return {
     props: {
@@ -44,20 +44,15 @@ export default function Accountant({
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
-    console.log(servicesData);
-    console.log(formData.date);
-
     setServicesData(
       await getServicesByDateAndDepartment(formData.date, formData.departmentId)
     );
-
-    console.log(servicesData);
   };
 
   return (
     <section className="py-5 container mx-auto">
       <Head>
-        <title>Генерация отчётов</title>
+        <title>Генерация отчётов - отделения</title>
       </Head>
       <h2 className="text-xl md:text-5xl text-center font-bold py-10">
         Генерация отчётов
