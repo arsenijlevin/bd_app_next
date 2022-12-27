@@ -26,9 +26,6 @@ export const getServicesByDateAndDepartment = async (
   date: string,
   departmentId: number
 ): Promise<renderedServicesJoined[]> => {
-  console.log('date', date);
-  console.log('DI', departmentId);
-
   if (!date || !departmentId) return [];
 
   const options = {
@@ -59,9 +56,6 @@ export const getServicesByDateAndDoctor = async (
   date: string,
   doctorId: number
 ): Promise<renderedServicesJoined[]> => {
-  console.log('date', date);
-  console.log('DI', doctorId);
-
   if (!date || !doctorId) return [];
 
   const options = {

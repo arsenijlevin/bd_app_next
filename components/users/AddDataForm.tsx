@@ -98,7 +98,7 @@ export default function AddDataForm() {
         type="submit"
         className="flex justify-center text-md w-1/3 bg-green-500 text-black px-4 py-2 border rounded-md hover:bg-gray-50 hover:border-green-500 hover:text-green-500"
       >
-        Готово
+        Добавить
       </button>
     </form>
   );
