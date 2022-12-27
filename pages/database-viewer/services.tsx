@@ -15,6 +15,9 @@ import { IFormMode } from '../../lib/interfaces/IFormMode';
 import { IDeleteComponent } from '../../lib/interfaces/IDeleteComponent';
 import Head from 'next/head';
 
+import { getInitialProps, Rights } from '../../lib/auth/helpers';
+import { NextPageContext } from 'next';
+
 const TABLE_NAME = 'services';
 const FORM_MODE = 'add';
 const SEARCH_KEY = -1;
@@ -38,6 +41,9 @@ export const KeyServicesContext = createContext<{
   formData: {} as ServiceData,
   deleteKey: SEARCH_KEY
 });
+
+DatabaseViewerServices.getInitialProps = (ctx: NextPageContext) =>
+  getInitialProps(ctx, [Rights.ADMIN]);
 
 export default function DatabaseViewerServices() {
   const queryClient = useQueryClient();

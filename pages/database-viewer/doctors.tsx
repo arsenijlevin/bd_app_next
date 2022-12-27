@@ -14,6 +14,8 @@ import { DoctorData } from '../../prisma/controllers/doctorsController';
 import { IFormMode } from '../../lib/interfaces/IFormMode';
 import { IDeleteComponent } from '../../lib/interfaces/IDeleteComponent';
 import Head from 'next/head';
+import { getInitialProps, Rights } from '../../lib/auth/helpers';
+import { NextPageContext } from 'next';
 
 const TABLE_NAME = 'doctors';
 const FORM_MODE = 'add';
@@ -38,6 +40,9 @@ export const KeyDoctorsContext = createContext<{
   formData: {} as DoctorData,
   deleteKey: SEARCH_KEY
 });
+
+DatabaseViewerDoctors.getInitialProps = (ctx: NextPageContext) =>
+  getInitialProps(ctx, [Rights.ADMIN]);
 
 export default function DatabaseViewerDoctors() {
   const queryClient = useQueryClient();

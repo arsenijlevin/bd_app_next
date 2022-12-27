@@ -13,6 +13,9 @@ import { useQueryOptions } from '../../lib/useQueryOptions';
 import { UserData } from '../../prisma/controllers/usersController';
 import Head from 'next/head';
 
+import { getInitialProps, Rights } from '../../lib/auth/helpers';
+import { NextPageContext } from 'next';
+
 interface IDeleteComponent {
   deleteHandler: () => void;
   cancleHandler: () => void;
@@ -44,6 +47,9 @@ export const KeyUsersContext = createContext<{
   formData: {} as UserData,
   deleteKey: ''
 });
+
+DatabaseViewerUsers.getInitialProps = (ctx: NextPageContext) =>
+  getInitialProps(ctx, [Rights.ADMIN]);
 
 export default function DatabaseViewerUsers() {
   const queryClient = useQueryClient();

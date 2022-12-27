@@ -1,6 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { IUserData } from '../interfaces';
 import { prisma } from '../db';
+import * as bcrypt from 'bcrypt';
+import { Secret, sign } from 'jsonwebtoken';
+import cookie from 'cookie';
 
 export type UserData = IUserData;
 
@@ -19,6 +22,12 @@ export async function getUsers(req: NextApiRequest, res: NextApiResponse) {
 export async function addUsers(req: NextApiRequest, res: NextApiResponse) {
   try {
     const formData: UserData = req.body;
+
+    const password = formData.password;
+
+    const hash = await bcrypt.hash(password, 10);
+
+    formData.password = hash;
 
     if (!formData) {
       return res.status(404).json({ error: 'Data is not provided' });
@@ -98,5 +107,46 @@ export async function getUser(req: NextApiRequest, res: NextApiResponse) {
     return res.status(200).json(users);
   } catch (error) {
     throw new Error('500');
+  }
+}
+
+export async function login(req: NextApiRequest, res: NextApiResponse) {
+  try {
+    const login = req.body.login;
+
+    const user = await prisma.users.findFirst({
+      where: {
+        login: login.toString()
+      }
+    });
+
+    if (!user) throw new Error('500');
+
+    const isPasswordCorrect = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
+
+    if (!isPasswordCorrect) throw new Error('500');
+
+    const claims = { login: user.login, username: user.name, rights_id: 1 };
+    const jwt = sign(claims, process.env.SECRET_KEY as Secret, {
+      expiresIn: '1h'
+    });
+
+    res.setHeader(
+      'Set-Cookie',
+      cookie.serialize('auth', jwt, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development',
+        sameSite: 'strict',
+        maxAge: 3600,
+        path: '/'
+      })
+    );
+
+    return res.status(200).json({ status: 'OK' });
+  } catch (error) {
+    return res.status(403).json({ error: 'Something went wrong!' });
   }
 }

@@ -1,6 +1,11 @@
+import { NextPageContext } from 'next';
 import Head from 'next/head';
+import { getInitialProps, Rights } from '../../lib/auth/helpers';
 
-export default function DatabaseViewer() {
+DatabaseViewer.getInitialProps = (ctx: NextPageContext) =>
+  getInitialProps(ctx, [Rights.ADMIN]);
+
+function DatabaseViewer() {
   return (
     <section className="py-5">
       <Head>
@@ -29,3 +34,5 @@ export default function DatabaseViewer() {
     </section>
   );
 }
+
+export default DatabaseViewer;
