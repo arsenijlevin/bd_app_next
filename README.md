@@ -28,3 +28,9 @@ List of availble pages
   - /services
 
 All pages in /database-viewer allows to add, modify and delete data from corresonding tables in database.
+
+- /accountant
+  - /doctors
+  - departments
+
+All pages in /accountant allows to generate reports, based on corresponding data from database.
