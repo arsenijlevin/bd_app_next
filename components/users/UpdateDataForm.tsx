@@ -74,7 +74,7 @@ export default function UpdateDataForm({ userToUpdate }: IUpdateForm) {
         </div>
         <div className="input-type">
           <input
-            type="text"
+            type="password"
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
               setFormData &&
                 setFormData(

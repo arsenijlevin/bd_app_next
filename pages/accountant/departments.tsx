@@ -1,10 +1,12 @@
 import { DateTime } from 'luxon';
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import ServicesInfo from '../../components/accountant/ServicesInfo';
 import Table from '../../components/accountant/Table';
+import Logout from '../../components/auth/Logout';
 import { getServicesByDateAndDepartment } from '../../lib/accountant/services';
+import { getInitialProps, Rights } from '../../lib/auth/helpers';
 import { renderedServicesJoined } from '../../prisma/controllers/accountantController';
 import { prisma } from '../../prisma/db';
 
@@ -17,7 +19,9 @@ interface IAccountantDepartmentsPageProps {
 
 export const getServerSideProps: GetServerSideProps<
   IAccountantDepartmentsPageProps
-> = async () => {
+> = async (ctx: GetServerSidePropsContext) => {
+  getInitialProps(ctx, [Rights.ADMIN, Rights.ACCOUNTANT]);
+
   const departments = await prisma.departments.findMany({});
 
   return {
@@ -30,7 +34,7 @@ export const getServerSideProps: GetServerSideProps<
   };
 };
 
-export default function Accountant({
+export default function AccountantDepartments({
   departments
 }: IAccountantDepartmentsPageProps) {
   const [formData, setFormData] = useState({
@@ -57,7 +61,9 @@ export default function Accountant({
       <h2 className="text-xl md:text-5xl text-center font-bold py-10">
         Генерация отчётов
       </h2>
-
+      <div className="left flex gap-3">
+        <Logout></Logout>
+      </div>
       <form onSubmit={onSubmit}>
         <div className="container flex justify-between py-5 flex-col gap-2 w-96">
           <h3>Выберите дату: </h3>

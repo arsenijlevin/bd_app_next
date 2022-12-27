@@ -16,6 +16,7 @@ import { IDeleteComponent } from '../../lib/interfaces/IDeleteComponent';
 import Head from 'next/head';
 import { getInitialProps, Rights } from '../../lib/auth/helpers';
 import { NextPageContext } from 'next';
+import Logout from '../../components/auth/Logout';
 
 const TABLE_NAME = 'doctors';
 const FORM_MODE = 'add';
@@ -107,6 +108,9 @@ export default function DatabaseViewerDoctors() {
           setDeleteKey
         }}
       >
+        <div className="left flex gap-3">
+          <Logout></Logout>
+        </div>
         <div className="container mx-auto flex justify-between py-5 border-b">
           <div className="left flex gap-3">
             <button

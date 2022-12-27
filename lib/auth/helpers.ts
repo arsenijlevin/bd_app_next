@@ -1,6 +1,6 @@
 import * as cookie from 'cookie';
 import { decode } from 'jsonwebtoken';
-import { NextPageContext } from 'next';
+import { GetServerSidePropsContext, NextPageContext } from 'next';
 import Router from 'next/router';
 
 export const enum Rights {
@@ -39,11 +39,33 @@ export const loginUser = async (loginData: ILoginData) => {
   }
 };
 
-export const getInitialProps = async (
-  ctx: NextPageContext,
-  rights: Rights[]
-) => {
-  if (!ctx.req?.headers.cookie) return;
+export const logoutUser = async () => {
+  try {
+    const options = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    };
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}api/auth/logout`,
+      options
+    );
+    if (!response.ok) {
+      return Promise.reject('Unexpected error happened');
+    }
+    const json = await response.json();
+
+    if (json) return json;
+    return {};
+  } catch (error) {
+    return {};
+  }
+};
+
+export const getInitialLoginProps = async (ctx: NextPageContext) => {
+  if (!ctx.req?.headers.cookie) {
+    return {};
+  }
 
   const parsedCookies = cookie.parse(ctx.req?.headers.cookie);
 
@@ -53,8 +75,43 @@ export const getInitialProps = async (
     rights_id: number;
   };
 
+  const homePage = getUserHomePageByRights(decodedCookie.rights_id);
+
+  if (decodedCookie.rights_id && !ctx.req) {
+    Router.replace(`/${homePage}`);
+    return {};
+  }
+
+  if (decodedCookie.rights_id && ctx.req) {
+    ctx.res?.writeHead(302, {
+      Location: `${process.env.NEXT_PUBLIC_BASE_URL}/${homePage}`
+    });
+    ctx.res?.end();
+    return {};
+  }
+};
+
+export const getInitialProps = async (
+  ctx: NextPageContext | GetServerSidePropsContext,
+  rights: Rights[]
+) => {
+  if (!ctx.req?.headers.cookie) {
+    ctx.res?.end();
+    return {};
+  }
+
+  const parsedCookies = cookie.parse(ctx.req?.headers.cookie);
+
+  const decodedCookie = decode(parsedCookies.auth) as {
+    login: string;
+    password: string;
+    rights_id: number;
+  };
+
+  console.log(decodedCookie);
+
   if (!rights.includes(decodedCookie.rights_id) && !ctx.req) {
-    Router.replace('/404');
+    Router.replace('/login');
     return {};
   }
 
@@ -67,4 +124,21 @@ export const getInitialProps = async (
   }
 
   return {};
+};
+
+export const getUserHomePageByRights = (rights: Rights) => {
+  switch (rights) {
+    case Rights.ADMIN: {
+      return 'database-viewer';
+    }
+    case Rights.ACCOUNTANT: {
+      return 'accountant';
+    }
+    case Rights.DOCTOR: {
+      return 'doctor-add-service';
+    }
+    default: {
+      return '';
+    }
+  }
 };

@@ -7,10 +7,12 @@ import Success from '../../components/utility/Success';
 
 import { addRenderedService } from '../../lib/rendered-services/helper';
 import Head from 'next/head';
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { doctorToString } from '../../lib/doctors/helpers';
 
 import { prisma } from '../../prisma/db';
+import { getInitialProps, Rights } from '../../lib/auth/helpers';
+import Logout from '../../components/auth/Logout';
 
 interface IDoctorsAddServicePageProps {
   doctors: {
@@ -32,7 +34,9 @@ export interface IDoctorAddServiceForm {
 
 export const getServerSideProps: GetServerSideProps<
   IDoctorsAddServicePageProps
-> = async () => {
+> = async (ctx: GetServerSidePropsContext) => {
+  getInitialProps(ctx, [Rights.ADMIN, Rights.DOCTOR]);
+
   const doctors = await prisma.doctors.findMany();
   const services = await prisma.services.findMany();
 
@@ -84,7 +88,7 @@ export default function DoctorAddService({
       <h2 className="text-xl md:text-5xl text-center font-bold py-10">
         Учёт оказанной услуги
       </h2>
-
+      <Logout></Logout>
       <form className="grid lg:grid-cols-2 w-2/3 gap-4" onSubmit={handleSubmit}>
         <div className="input-type hidden">
           <input

@@ -17,6 +17,7 @@ import Head from 'next/head';
 
 import { getInitialProps, Rights } from '../../lib/auth/helpers';
 import { NextPageContext } from 'next';
+import Logout from '../../components/auth/Logout';
 
 const TABLE_NAME = 'services';
 const FORM_MODE = 'add';
@@ -110,6 +111,9 @@ export default function DatabaseViewerServices() {
           setDeleteKey
         }}
       >
+        <div className="left flex gap-3">
+          <Logout></Logout>
+        </div>
         <div className="container mx-auto flex justify-between py-5 border-b">
           <div className="flex left text-md ">
             <button

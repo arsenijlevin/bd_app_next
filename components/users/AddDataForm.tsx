@@ -54,7 +54,7 @@ export default function AddDataForm() {
       </div>
       <div className="input-type">
         <input
-          type="text"
+          type="password"
           onChange={(event: ChangeEvent<HTMLInputElement>) => {
             setFormData &&
               setFormData(

@@ -4,6 +4,7 @@ import { prisma } from '../db';
 import * as bcrypt from 'bcrypt';
 import { Secret, sign } from 'jsonwebtoken';
 import cookie from 'cookie';
+import { Rights } from '../../lib/auth/helpers';
 
 export type UserData = IUserData;
 
@@ -51,6 +52,8 @@ export async function modifyUsers(req: NextApiRequest, res: NextApiResponse) {
     if (!userLogin || !formData) {
       return res.status(404).json({ error: 'Data is not provided' });
     }
+
+    formData.password = await bcrypt.hash(formData.password, 10);
 
     const user = await prisma.users.update({
       where: {
@@ -129,7 +132,11 @@ export async function login(req: NextApiRequest, res: NextApiResponse) {
 
     if (!isPasswordCorrect) throw new Error('500');
 
-    const claims = { login: user.login, username: user.name, rights_id: 1 };
+    const claims = {
+      login: user.login,
+      username: user.name,
+      rights_id: user.rights_id
+    };
     const jwt = sign(claims, process.env.SECRET_KEY as Secret, {
       expiresIn: '1h'
     });
@@ -145,7 +152,27 @@ export async function login(req: NextApiRequest, res: NextApiResponse) {
       })
     );
 
-    return res.status(200).json({ status: 'OK' });
+    return res
+      .status(200)
+      .json({ status: 'OK', rights_id: user.rights_id as Rights });
+  } catch (error) {
+    return res.status(403).json({ error: 'Something went wrong!' });
+  }
+}
+
+export async function logout(req: NextApiRequest, res: NextApiResponse) {
+  try {
+    res.setHeader('Set-Cookie', [
+      cookie.serialize('auth', '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development',
+        sameSite: 'strict',
+        maxAge: -1,
+        path: '/'
+      })
+    ]);
+
+    res.end();
   } catch (error) {
     return res.status(403).json({ error: 'Something went wrong!' });
   }

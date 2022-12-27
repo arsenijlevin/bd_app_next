@@ -15,6 +15,7 @@ import Head from 'next/head';
 
 import { getInitialProps, Rights } from '../../lib/auth/helpers';
 import { NextPageContext } from 'next';
+import Logout from '../../components/auth/Logout';
 
 interface IDeleteComponent {
   deleteHandler: () => void;
@@ -116,6 +117,9 @@ export default function DatabaseViewerUsers() {
           setDeleteKey
         }}
       >
+        <div className="left flex gap-3">
+          <Logout></Logout>
+        </div>
         <div className="container mx-auto flex justify-between py-5 border-b">
           <div className="left flex gap-3">
             <button
