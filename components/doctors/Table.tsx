@@ -30,11 +30,11 @@ function TableHeader({ headers }: ITableHeaderProps) {
     <thead>
       <tr className="bg-gray-800">
         {headers.map((header: string, index: number) => (
-          <th className="px-16 py-2" key={index}>
+          <th className="px-2 py-2" key={index}>
             <span className="text-gray-200">{header}</span>
           </th>
         ))}
-        <th className="px-16 py-2">
+        <th className="px-2 py-2">
           <span className="text-gray-200">Действия</span>
         </th>
       </tr>
@@ -61,13 +61,13 @@ function TableRow(data: DoctorData) {
     <tr className="bg-gray-50 text-center">
       {Object.values(data).map((value, index: number) => {
         return (
-          <td className="px-16 py-2" key={index}>
+          <td className="px-2 py-2" key={index}>
             <span>{value?.toString()}</span>
           </td>
         );
       })}
 
-      <td className="px-16 py-2 flex justify-around gap-1">
+      <td className="px-2 py-2 flex justify-around gap-1">
         <button className="cursor" onClick={onUpdate}>
           <BiEdit size={25} color={'rgb(34, 197, 94)'}></BiEdit>
         </button>

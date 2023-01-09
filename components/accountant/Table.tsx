@@ -28,7 +28,7 @@ function TableHeader({ headers }: ITableHeaderProps) {
     <thead>
       <tr className="bg-gray-800 border-slate-600">
         {headers.map((header: string, index: number) => (
-          <th className="px-16 py-2 border border-slate-600" key={index}>
+          <th className="px-2 py-2 border border-slate-600" key={index}>
             <span className="text-gray-200">{header}</span>
           </th>
         ))}
