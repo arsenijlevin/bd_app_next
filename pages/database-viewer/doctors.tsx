@@ -132,7 +132,7 @@ export default function DatabaseViewerDoctors() {
           )}
         </div>
 
-        <div className="h-80 min-w-full">
+        <div className="min-w-full">
           <Form></Form>
         </div>
         <div className="container mx-auto">

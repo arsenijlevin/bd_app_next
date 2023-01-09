@@ -1,9 +1,41 @@
-import { doctors, patients, Prisma } from '@prisma/client';
+import {
+  departments,
+  doctors,
+  patients,
+  Prisma,
+  specialties
+} from '@prisma/client';
 import {
   DoctorData,
   DoctorsJoined
 } from '../../prisma/controllers/doctorsController';
 import { parseIntIfValueIsString } from '../parseIntIfValueIsString';
+
+export const getDepartments = async (): Promise<departments[]> => {
+  const options = {
+    method: 'POST'
+  };
+
+  return await (
+    await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}api/departments/get`,
+      options
+    )
+  ).json();
+};
+
+export const getSpecialties = async (): Promise<specialties[]> => {
+  const options = {
+    method: 'POST'
+  };
+
+  return await (
+    await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}api/specialties/get`,
+      options
+    )
+  ).json();
+};
 
 export const getDoctors = async (): Promise<DoctorsJoined[]> => {
   const options = {

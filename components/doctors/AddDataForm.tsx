@@ -1,6 +1,12 @@
-import { ChangeEvent, FormEvent, useContext } from 'react';
+import { departments, specialties } from '@prisma/client';
+import { ChangeEvent, FormEvent, useContext, useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
-import { addDoctor, getDoctors } from '../../lib/doctors/helpers';
+import {
+  addDoctor,
+  getDepartments,
+  getDoctors,
+  getSpecialties
+} from '../../lib/doctors/helpers';
 import { KeyDoctorsContext } from '../../pages/database-viewer/doctors';
 import { DoctorData } from '../../prisma/controllers/doctorsController';
 
@@ -10,6 +16,8 @@ import Success from '../utility/Success';
 
 export default function AddDataForm() {
   const { formData, setFormData } = useContext(KeyDoctorsContext);
+  const [specialties, setSpecialties] = useState([] as specialties[]);
+  const [departments, setDepartments] = useState([] as departments[]);
 
   const queryClient = useQueryClient();
 
@@ -36,6 +44,18 @@ export default function AddDataForm() {
 
   if (addMutation.isSuccess) return <Success message="Успешно!"></Success>;
 
+  if (specialties.length === 0) {
+    getSpecialties().then(specs => {
+      setSpecialties && setSpecialties(specs);
+    });
+  }
+
+  if (departments.length === 0) {
+    getDepartments().then(deps => {
+      setDepartments && setDepartments(deps);
+    });
+  }
+
   return (
     <form className="grid lg:grid-cols-2 w-2/3 gap-4" onSubmit={handleSubmit}>
       <div className="input-type hidden">
@@ -47,32 +67,58 @@ export default function AddDataForm() {
         />
       </div>
       <div className="input-type">
-        <input
-          type="number"
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+        <select
+          name="specialty_id"
+          id="specialty_id"
+          className="border w-full px-5 py-3 focus:outline-none rounded-md"
+          onChange={(event: ChangeEvent<HTMLSelectElement>) => {
             setFormData &&
               setFormData(
-                Object.assign(formData, { specialty_id: event.target.value })
+                Object.assign(formData, {
+                  specialty_id:
+                    event.target[event.target.selectedIndex].getAttribute(
+                      'data-id'
+                    )
+                })
               );
           }}
-          name="specialty_id"
-          placeholder="Специальность"
-          className="border w-full px-5 py-3 focus:outline-none rounded-md"
-        />
+        >
+          {specialties.map((spec, index) => {
+            return (
+              <option
+                key={index}
+                data-id={spec.id}
+              >{`(${spec.id}) ${spec.title}`}</option>
+            );
+          })}
+        </select>
       </div>
       <div className="input-type">
-        <input
-          type="number"
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+        <select
+          name="department_id"
+          id="department_id"
+          className="border w-full px-5 py-3 focus:outline-none rounded-md"
+          onChange={(event: ChangeEvent<HTMLSelectElement>) => {
             setFormData &&
               setFormData(
-                Object.assign(formData, { department_id: event.target.value })
+                Object.assign(formData, {
+                  department_id:
+                    event.target[event.target.selectedIndex].getAttribute(
+                      'data-id'
+                    )
+                })
               );
           }}
-          name="department_id"
-          placeholder="Отделение"
-          className="border w-full px-5 py-3 focus:outline-none rounded-md"
-        />
+        >
+          {departments.map((department, index) => {
+            return (
+              <option
+                key={index}
+                data-id={department.id}
+              >{`(${department.id}) ${department.title}`}</option>
+            );
+          })}
+        </select>
       </div>
       <div className="input-type">
         <input
