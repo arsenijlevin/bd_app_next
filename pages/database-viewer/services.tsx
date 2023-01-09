@@ -135,7 +135,7 @@ export default function DatabaseViewerServices() {
           )}
         </div>
 
-        <div className="h-44 min-w-full">
+        <div className="min-w-full">
           <Form></Form>
         </div>
         <div className="container mx-auto">

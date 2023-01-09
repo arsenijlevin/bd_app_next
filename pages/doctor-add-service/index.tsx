@@ -176,20 +176,22 @@ export default function DoctorAddService({
 
         <div className="container flex justify-between py-5 flex-col gap-2 w-96">
           <h3>Результат оказания услуги: </h3>
-          <textarea
-            className="border w-full px-5 py-3 focus:outline-none rounded-md
-            h-20 resize-x"
-            name="result"
-            id="result"
-            onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
-              setFormData &&
-                setFormData(
-                  Object.assign(formData, {
-                    result: event.target.value
-                  })
-                );
-            }}
-          ></textarea>
+          <div className="h-20">
+            <textarea
+              className="border w-full px-5 py-3 focus:outline-none rounded-md
+            h-20 min-h-full max-h-80"
+              name="result"
+              id="result"
+              onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
+                setFormData &&
+                  setFormData(
+                    Object.assign(formData, {
+                      result: event.target.value
+                    })
+                  );
+              }}
+            ></textarea>
+          </div>
         </div>
 
         <button

@@ -141,7 +141,7 @@ export default function DatabaseViewerUsers() {
           )}
         </div>
 
-        <div className="h-60 min-w-full">
+        <div className="min-w-full">
           <Form></Form>
         </div>
         <div className="container mx-auto">
