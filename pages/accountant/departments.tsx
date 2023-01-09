@@ -5,6 +5,7 @@ import { ChangeEvent, FormEvent, useState } from 'react';
 import ServicesInfo from '../../components/accountant/ServicesInfo';
 import Table from '../../components/accountant/Table';
 import Logout from '../../components/auth/Logout';
+import BackButton from '../../components/utility/BackButton';
 import { getServicesByDateAndDepartment } from '../../lib/accountant/services';
 import { getInitialProps, Rights } from '../../lib/auth/helpers';
 import { renderedServicesJoined } from '../../prisma/controllers/accountantController';
@@ -56,14 +57,15 @@ export default function AccountantDepartments({
   return (
     <section className="py-5 container mx-auto">
       <Head>
-        <title>Генерация отчётов - отделения</title>
+        <title>Генерация отчётов - по отделениям</title>
       </Head>
       <h2 className="text-xl md:text-5xl text-center font-bold py-10">
-        Генерация отчётов
+        Генерация отчётов - по отделениям
       </h2>
       <div className="left flex gap-3">
         <Logout></Logout>
       </div>
+      <BackButton link="/accountant"></BackButton>
       <form onSubmit={onSubmit}>
         <div className="container flex justify-between py-5 flex-col gap-2 w-96">
           <h3>Выберите дату: </h3>
@@ -126,7 +128,7 @@ export default function AccountantDepartments({
 
       <div className="container mx-auto flex justify-between py-5 flex-col gap-2">
         <h3>Результат: </h3>
-        {servicesData.length > 0 && (
+        {servicesData.length > 0 ? (
           <Table
             headers={[
               'Дата и время',
@@ -138,6 +140,8 @@ export default function AccountantDepartments({
             ]}
             data={servicesData}
           ></Table>
+        ) : (
+          <p>По запросу не найдено ни одной записи</p>
         )}
       </div>
     </section>

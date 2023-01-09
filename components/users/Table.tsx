@@ -1,11 +1,11 @@
 import { useContext } from 'react';
 import { BiEdit, BiTrashAlt } from 'react-icons/bi';
 import { KeyUsersContext } from '../../pages/database-viewer/users';
-import { UserData } from '../../prisma/controllers/usersController';
+import { UsersJoined } from '../../prisma/controllers/usersController';
 
 interface ITableProps {
   headers: string[];
-  data: UserData[];
+  data: UsersJoined[];
 }
 
 interface ITableHeaderProps {
@@ -17,7 +17,7 @@ export default function Table({ headers, data }: ITableProps) {
     <table className="min-w-full table-auto">
       <TableHeader headers={headers}></TableHeader>
       <tbody className="bg-gray-200">
-        {data.map((object: UserData, index: number) => (
+        {data.map((object: UsersJoined, index: number) => (
           <TableRow key={index} {...object} />
         ))}
       </tbody>
@@ -42,7 +42,7 @@ function TableHeader({ headers }: ITableHeaderProps) {
   );
 }
 
-function TableRow(data: UserData) {
+function TableRow(data: UsersJoined) {
   const { setUserKey, setFormMode, setUserToUpdate, setDeleteKey } =
     useContext(KeyUsersContext);
 
@@ -57,16 +57,22 @@ function TableRow(data: UserData) {
     setDeleteKey && setDeleteKey(data.login);
   };
 
+  // ['Логин', 'Пароль', 'Имя пользователя', 'Права']
+
   return (
     <tr className="bg-gray-50 text-center">
-      {Object.values(data).map((value, index: number) => {
-        return (
-          <td className="px-2 py-2" key={index}>
-            <span>{value}</span>
-          </td>
-        );
-      })}
-
+      <td className="px-2 py-2">
+        <span>{data.login}</span>
+      </td>
+      <td className="px-2 py-2">
+        <span>{data.password}</span>
+      </td>
+      <td className="px-2 py-2">
+        <span>{data.name}</span>
+      </td>
+      <td className="px-2 py-2">
+        <span>{`(${data.rights_id}) ${data.rights.title}`}</span>
+      </td>
       <td className="px-2 py-2 flex justify-around gap-1">
         <button className="cursor" onClick={onUpdate}>
           <BiEdit size={25} color={'rgb(34, 197, 94)'}></BiEdit>

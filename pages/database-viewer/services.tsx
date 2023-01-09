@@ -18,6 +18,7 @@ import Head from 'next/head';
 import { getInitialProps, Rights } from '../../lib/auth/helpers';
 import { NextPageContext } from 'next';
 import Logout from '../../components/auth/Logout';
+import BackButton from '../../components/utility/BackButton';
 
 const TABLE_NAME = 'services';
 const FORM_MODE = 'add';
@@ -89,7 +90,7 @@ export default function DatabaseViewerServices() {
   };
 
   return (
-    <section className="py-5">
+    <section className="py-5 container mx-auto">
       <Head>
         <title>Список услуг</title>
       </Head>
@@ -114,6 +115,7 @@ export default function DatabaseViewerServices() {
         <div className="left flex gap-3">
           <Logout></Logout>
         </div>
+        <BackButton link="/database-viewer"></BackButton>
         <div className="container mx-auto flex justify-between py-5 border-b">
           <div className="flex left text-md ">
             <button

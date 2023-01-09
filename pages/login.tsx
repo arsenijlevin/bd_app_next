@@ -60,7 +60,7 @@ export default function Login() {
   };
 
   return (
-    <section className="py-5">
+    <section className="py-5 container mx-auto">
       <Head>
         <title>Вход</title>
       </Head>

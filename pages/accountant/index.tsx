@@ -1,5 +1,6 @@
 import { NextPageContext } from 'next';
 import Head from 'next/head';
+import Link from 'next/link';
 import Logout from '../../components/auth/Logout';
 import { getInitialProps, Rights } from '../../lib/auth/helpers';
 
@@ -8,7 +9,7 @@ Accountant.getInitialProps = (ctx: NextPageContext) =>
 
 export default function Accountant() {
   return (
-    <section className="py-5">
+    <section className="py-5 container mx-auto">
       <Head>
         <title>Генерация отчётов</title>
       </Head>
@@ -24,10 +25,10 @@ export default function Accountant() {
       <div className="container mx-auto flex justify-between py-5">
         <ul>
           <li>
-            <a href="accountant/departments">По отделениям</a>
+            <Link href="accountant/departments">По отделениям</Link>
           </li>
           <li>
-            <a href="accountant/doctors">По врачам</a>
+            <Link href="accountant/doctors">По врачам</Link>
           </li>
         </ul>
       </div>

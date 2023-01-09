@@ -17,6 +17,7 @@ import Head from 'next/head';
 import { getInitialProps, Rights } from '../../lib/auth/helpers';
 import { NextPageContext } from 'next';
 import Logout from '../../components/auth/Logout';
+import BackButton from '../../components/utility/BackButton';
 
 const TABLE_NAME = 'doctors';
 const FORM_MODE = 'add';
@@ -88,7 +89,7 @@ export default function DatabaseViewerDoctors() {
   };
 
   return (
-    <section className="py-5">
+    <section className="py-5 container mx-auto">
       <Head>
         <title>Врачи</title>
       </Head>
@@ -111,6 +112,7 @@ export default function DatabaseViewerDoctors() {
         <div className="left flex gap-3">
           <Logout></Logout>
         </div>
+        <BackButton link="/database-viewer"></BackButton>
         <div className="container mx-auto flex justify-between py-5 border-b">
           <div className="left flex gap-3">
             <button

@@ -1,5 +1,6 @@
 import { NextPageContext } from 'next';
 import Head from 'next/head';
+import Link from 'next/link';
 import Logout from '../../components/auth/Logout';
 import { getInitialProps, Rights } from '../../lib/auth/helpers';
 
@@ -8,7 +9,7 @@ DatabaseViewer.getInitialProps = (ctx: NextPageContext) =>
 
 function DatabaseViewer() {
   return (
-    <section className="py-5">
+    <section className="py-5 container mx-auto">
       <Head>
         <title>Админ-панель</title>
       </Head>
@@ -24,13 +25,13 @@ function DatabaseViewer() {
       <div className="container mx-auto flex justify-between py-5">
         <ul>
           <li>
-            <a href="database-viewer/doctors">Врачи</a>
+            <Link href="database-viewer/doctors">Врачи</Link>
           </li>
           <li>
-            <a href="database-viewer/users">Пользователи</a>
+            <Link href="database-viewer/users">Пользователи</Link>
           </li>
           <li>
-            <a href="database-viewer/services">Услуги</a>
+            <Link href="database-viewer/services">Услуги</Link>
           </li>
         </ul>
       </div>

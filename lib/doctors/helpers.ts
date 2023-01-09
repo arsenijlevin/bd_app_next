@@ -1,8 +1,11 @@
 import { doctors, patients, Prisma } from '@prisma/client';
-import { DoctorData } from '../../prisma/controllers/doctorsController';
+import {
+  DoctorData,
+  DoctorsJoined
+} from '../../prisma/controllers/doctorsController';
 import { parseIntIfValueIsString } from '../parseIntIfValueIsString';
 
-export const getDoctors = async (): Promise<DoctorData[]> => {
+export const getDoctors = async (): Promise<DoctorsJoined[]> => {
   const options = {
     method: 'POST'
   };
@@ -17,7 +20,7 @@ export const getDoctors = async (): Promise<DoctorData[]> => {
 
 export const getDoctor = async (
   doctorId: number
-): Promise<DoctorData | undefined> => {
+): Promise<DoctorsJoined | undefined> => {
   if (!doctorId) return undefined;
 
   return await (

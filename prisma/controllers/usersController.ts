@@ -5,12 +5,25 @@ import * as bcrypt from 'bcrypt';
 import { Secret, sign } from 'jsonwebtoken';
 import cookie from 'cookie';
 import { Rights } from '../../lib/auth/helpers';
+import { Prisma } from '@prisma/client';
 
 export type UserData = IUserData;
 
+const usersInclude = Prisma.validator<Prisma.usersInclude>()({
+  rights: true
+});
+
+export type UsersJoined = Prisma.usersGetPayload<{
+  include: typeof usersInclude;
+}>;
+
 export async function getUsers(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const users = await prisma.users.findMany();
+    const users = await prisma.users.findMany({
+      include: {
+        rights: true
+      }
+    });
 
     if (!users) return res.status(404).json({ error: 'Not found' });
 
@@ -53,19 +66,34 @@ export async function modifyUsers(req: NextApiRequest, res: NextApiResponse) {
       return res.status(404).json({ error: 'Data is not provided' });
     }
 
-    formData.password = await bcrypt.hash(formData.password, 10);
+    const user = await prisma.users.findFirst({
+      where: {
+        login: userLogin
+      }
+    });
 
-    const user = await prisma.users.update({
+    const data = {
+      login: formData.login,
+      password: formData.password,
+      name: formData.name,
+      rights_id: formData.rights_id
+    };
+    console.log(formData.password);
+    console.log(user?.password);
+
+    if (formData.password === user?.password) {
+      delete data.password;
+    } else {
+      data.password = await bcrypt.hash(data.password, 10);
+    }
+    await prisma.users.update({
       where: {
         login: userLogin
       },
-      data: {
-        login: formData.login,
-        password: formData.password,
-        name: formData.name,
-        rights_id: formData.rights_id
-      }
+      data: data
     });
+
+    console.log(data);
 
     return res.status(200).json({ user: user });
   } catch (error) {
@@ -104,6 +132,9 @@ export async function getUser(req: NextApiRequest, res: NextApiResponse) {
     const users = await prisma.users.findFirst({
       where: {
         login: userLogin.toString()
+      },
+      include: {
+        rights: true
       }
     });
 

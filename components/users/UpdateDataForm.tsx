@@ -1,6 +1,7 @@
-import { ChangeEvent, FormEvent, useContext } from 'react';
+import { rights } from '@prisma/client';
+import { ChangeEvent, FormEvent, useContext, useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
-import { getUsers, updateUser } from '../../lib/users/helpers';
+import { getRights, getUsers, updateUser } from '../../lib/users/helpers';
 import { KeyUsersContext } from '../../pages/database-viewer/users';
 
 import { UserData } from '../../prisma/controllers/usersController';
@@ -14,6 +15,13 @@ interface IUpdateForm {
 
 export default function UpdateDataForm({ userToUpdate }: IUpdateForm) {
   const { formData, setFormData, setFormMode } = useContext(KeyUsersContext);
+  const [availableRights, setAvailableRights] = useState([] as rights[]);
+
+  if (availableRights.length === 0) {
+    getRights().then(res => {
+      setAvailableRights && setAvailableRights(res);
+    });
+  }
 
   const queryClient = useQueryClient();
 
@@ -103,19 +111,34 @@ export default function UpdateDataForm({ userToUpdate }: IUpdateForm) {
           />
         </div>
         <div className="input-type">
-          <input
-            type="number"
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+          <select
+            name="rights_id"
+            id="rights_id"
+            defaultValue={`(${availableRights[rights_id - 1].id}) ${
+              availableRights[rights_id - 1].title
+            }`}
+            className="border w-full px-5 py-3 focus:outline-none rounded-md"
+            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
               setFormData &&
                 setFormData(
-                  Object.assign(formData, { rights_id: event.target.value })
+                  Object.assign(formData, {
+                    rights_id:
+                      event.target[event.target.selectedIndex].getAttribute(
+                        'data-id'
+                      )
+                  })
                 );
             }}
-            defaultValue={rights_id}
-            name="rights_id"
-            placeholder="Права"
-            className="border w-full px-5 py-3 focus:outline-none rounded-md"
-          />
+          >
+            {availableRights.map((right, index) => {
+              return (
+                <option
+                  key={index}
+                  data-id={right.id}
+                >{`(${right.id}) ${right.title}`}</option>
+              );
+            })}
+          </select>
         </div>
 
         <button className="flex justify-center text-md w-1/3 bg-yellow-500 text-white px-4 py-2 border rounded-md hover:bg-gray-50 hover:border-yellow-50 hover:text-yellow-500">

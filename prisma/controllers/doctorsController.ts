@@ -2,12 +2,27 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { IDoctorData } from '../interfaces';
 import { prisma } from '../db';
 import { parseIntIfValueIsString } from '../../lib/parseIntIfValueIsString';
+import { Prisma } from '@prisma/client';
 
 export type DoctorData = IDoctorData;
 
+const doctorsInclude = Prisma.validator<Prisma.doctorsInclude>()({
+  departments: true,
+  specialties: true
+});
+
+export type DoctorsJoined = Prisma.doctorsGetPayload<{
+  include: typeof doctorsInclude;
+}>;
+
 export async function getDoctors(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const doctors = await prisma.doctors.findMany();
+    const doctors: DoctorsJoined[] = await prisma.doctors.findMany({
+      include: {
+        departments: true,
+        specialties: true
+      }
+    });
 
     if (!doctors) return res.status(404).json({ error: 'Not found' });
 

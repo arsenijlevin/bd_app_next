@@ -126,6 +126,25 @@ export const getInitialProps = async (
   return {};
 };
 
+export const getInitialIndexProps = async (
+  ctx: NextPageContext | GetServerSidePropsContext
+) => {
+  if (!ctx.req) {
+    Router.replace('/login');
+    return {};
+  }
+
+  if (ctx.req) {
+    ctx.res?.writeHead(302, {
+      Location: `${process.env.NEXT_PUBLIC_BASE_URL}/login`
+    });
+    ctx.res?.end();
+    return {};
+  }
+
+  return {};
+};
+
 export const getUserHomePageByRights = (rights: Rights) => {
   switch (rights) {
     case Rights.ADMIN: {
