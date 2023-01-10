@@ -1,7 +1,17 @@
-import { ChangeEvent, FormEvent, useContext } from 'react';
+import { departments, specialties, users } from '@prisma/client';
+import { ChangeEvent, FormEvent, useContext, useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
-import { getDoctors, updateDoctor } from '../../lib/doctors/helpers';
-import { KeyDoctorsContext } from '../../pages/database-viewer/doctors';
+import {
+  getDepartments,
+  getDoctors,
+  getSpecialties,
+  updateDoctor
+} from '../../lib/doctors/helpers';
+import { getDoctorUsers } from '../../lib/users/helpers';
+import {
+  DoctorFormData,
+  KeyDoctorsContext
+} from '../../pages/database-viewer/doctors';
 
 import { DoctorData } from '../../prisma/controllers/doctorsController';
 import Error from '../utility/Error';
@@ -14,6 +24,9 @@ interface IUpdateForm {
 
 export default function UpdateDataForm({ doctorToUpdate }: IUpdateForm) {
   const { formData, setFormData, setFormMode } = useContext(KeyDoctorsContext);
+  const [specialties, setSpecialties] = useState([] as specialties[]);
+  const [departments, setDepartments] = useState([] as departments[]);
+  const [doctorUsers, setDoctorUsers] = useState([] as users[]);
 
   const queryClient = useQueryClient();
 
@@ -41,7 +54,7 @@ export default function UpdateDataForm({ doctorToUpdate }: IUpdateForm) {
 
     setTimeout(() => {
       updateMutation.reset();
-      setFormData && setFormData({} as DoctorData);
+      setFormData && setFormData({} as DoctorFormData);
       setFormMode && setFormMode('add');
     }, 2000);
   };
@@ -55,6 +68,23 @@ export default function UpdateDataForm({ doctorToUpdate }: IUpdateForm) {
   const { id, specialty_id, department_id, salary, name, surname, patronymic } =
     doctorToUpdate;
 
+  if (specialties.length === 0) {
+    getSpecialties().then(specs => {
+      setSpecialties && setSpecialties(specs);
+    });
+  }
+
+  if (departments.length === 0) {
+    getDepartments().then(deps => {
+      setDepartments && setDepartments(deps);
+    });
+  }
+
+  if (doctorUsers.length === 0) {
+    getDoctorUsers().then(doctorUsers => {
+      setDoctorUsers && setDoctorUsers(doctorUsers);
+    });
+  }
   return (
     <div key={doctorToUpdate.id}>
       <form className="grid lg:grid-cols-2 w-2/3 gap-4" onSubmit={handleSubmit}>
@@ -68,34 +98,64 @@ export default function UpdateDataForm({ doctorToUpdate }: IUpdateForm) {
           />
         </div>
         <div className="input-type">
-          <input
-            type="number"
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+          <select
+            name="specialty_id"
+            id="specialty_id"
+            className="border w-full px-5 py-3 focus:outline-none rounded-md"
+            defaultValue={`(${specialties[specialty_id - 1].id}) ${
+              specialties[specialty_id - 1].title
+            }`}
+            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
               setFormData &&
                 setFormData(
-                  Object.assign(formData, { specialty_id: event.target.value })
+                  Object.assign(formData, {
+                    specialty_id:
+                      event.target[event.target.selectedIndex].getAttribute(
+                        'data-id'
+                      )
+                  })
                 );
             }}
-            name="specialty_id"
-            defaultValue={specialty_id}
-            placeholder="Специальность"
-            className="border w-full px-5 py-3 focus:outline-none rounded-md"
-          />
+          >
+            {specialties.map((spec, index) => {
+              return (
+                <option
+                  key={index}
+                  data-id={spec.id}
+                >{`(${spec.id}) ${spec.title}`}</option>
+              );
+            })}
+          </select>
         </div>
         <div className="input-type">
-          <input
-            type="number"
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+          <select
+            name="department_id"
+            id="department_id"
+            className="border w-full px-5 py-3 focus:outline-none rounded-md"
+            defaultValue={`(${departments[department_id - 1].id}) ${
+              departments[department_id - 1].title
+            }`}
+            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
               setFormData &&
                 setFormData(
-                  Object.assign(formData, { department_id: event.target.value })
+                  Object.assign(formData, {
+                    department_id:
+                      event.target[event.target.selectedIndex].getAttribute(
+                        'data-id'
+                      )
+                  })
                 );
             }}
-            defaultValue={department_id}
-            name="department_id"
-            placeholder="Отделение"
-            className="border w-full px-5 py-3 focus:outline-none rounded-md"
-          />
+          >
+            {departments.map((department, index) => {
+              return (
+                <option
+                  key={index}
+                  data-id={department.id}
+                >{`(${department.id}) ${department.title}`}</option>
+              );
+            })}
+          </select>
         </div>
         <div className="input-type">
           <input

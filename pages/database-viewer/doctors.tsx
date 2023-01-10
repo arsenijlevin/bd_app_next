@@ -14,19 +14,27 @@ import { DoctorData } from '../../prisma/controllers/doctorsController';
 import { IFormMode } from '../../lib/interfaces/IFormMode';
 import { IDeleteComponent } from '../../lib/interfaces/IDeleteComponent';
 import Head from 'next/head';
+import { getInitialProps, Rights } from '../../lib/auth/helpers';
+import { NextPageContext } from 'next';
+import Logout from '../../components/auth/Logout';
+import BackButton from '../../components/utility/BackButton';
 
 const TABLE_NAME = 'doctors';
 const FORM_MODE = 'add';
 const SEARCH_KEY = -1;
 
+export type DoctorFormData = DoctorData & {
+  doctor_user_login: string;
+};
+
 export const KeyDoctorsContext = createContext<{
   formMode: IFormMode;
   doctorKey: number;
   doctorToUpdate: DoctorData | undefined;
-  formData: DoctorData;
+  formData: DoctorFormData;
   deleteKey: number;
 
-  setFormData?: Dispatch<SetStateAction<DoctorData>>;
+  setFormData?: Dispatch<SetStateAction<DoctorFormData>>;
   setFormMode?: Dispatch<SetStateAction<IFormMode>>;
   setDoctorKey?: Dispatch<SetStateAction<number>>;
   setDoctorToUpdate?: Dispatch<SetStateAction<DoctorData | undefined>>;
@@ -35,9 +43,12 @@ export const KeyDoctorsContext = createContext<{
   formMode: FORM_MODE,
   doctorKey: SEARCH_KEY,
   doctorToUpdate: undefined,
-  formData: {} as DoctorData,
+  formData: {} as DoctorFormData,
   deleteKey: SEARCH_KEY
 });
+
+DatabaseViewerDoctors.getInitialProps = (ctx: NextPageContext) =>
+  getInitialProps(ctx, [Rights.ADMIN]);
 
 export default function DatabaseViewerDoctors() {
   const queryClient = useQueryClient();
@@ -47,7 +58,7 @@ export default function DatabaseViewerDoctors() {
   const [doctorToUpdate, setDoctorToUpdate] = useState<DoctorData | undefined>(
     undefined
   );
-  const [formData, setFormData] = useState({} as DoctorData);
+  const [formData, setFormData] = useState({} as DoctorFormData);
   const [deleteKey, setDeleteKey] = useState<number>(SEARCH_KEY);
 
   const { data, isLoading, isError } = useQuery(
@@ -82,7 +93,7 @@ export default function DatabaseViewerDoctors() {
   };
 
   return (
-    <section className="py-5">
+    <section className="py-5 container mx-auto">
       <Head>
         <title>Врачи</title>
       </Head>
@@ -102,6 +113,10 @@ export default function DatabaseViewerDoctors() {
           setDeleteKey
         }}
       >
+        <div className="left flex gap-3">
+          <Logout></Logout>
+        </div>
+        <BackButton link="/database-viewer"></BackButton>
         <div className="container mx-auto flex justify-between py-5 border-b">
           <div className="left flex gap-3">
             <button
@@ -121,7 +136,7 @@ export default function DatabaseViewerDoctors() {
           )}
         </div>
 
-        <div className="h-80 min-w-full">
+        <div className="min-w-full">
           <Form></Form>
         </div>
         <div className="container mx-auto">

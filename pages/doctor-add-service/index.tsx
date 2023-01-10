@@ -7,16 +7,22 @@ import Success from '../../components/utility/Success';
 
 import { addRenderedService } from '../../lib/rendered-services/helper';
 import Head from 'next/head';
-import { GetServerSideProps } from 'next';
-import { doctorToString } from '../../lib/doctors/helpers';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import {
+  doctorToString,
+  getDoctorByUserLogin
+} from '../../lib/doctors/helpers';
 
 import { prisma } from '../../prisma/db';
+import { getInitialProps, Rights } from '../../lib/auth/helpers';
+import Logout from '../../components/auth/Logout';
+import { doctors, users, users_doctors } from '@prisma/client';
+import { getUser } from '../../lib/users/helpers';
+import * as cookie from 'cookie';
+import { decode } from 'jsonwebtoken';
 
 interface IDoctorsAddServicePageProps {
-  doctors: {
-    name: string;
-    id: number;
-  }[];
+  login: string;
   services: {
     title: string;
     id: number;
@@ -32,16 +38,26 @@ export interface IDoctorAddServiceForm {
 
 export const getServerSideProps: GetServerSideProps<
   IDoctorsAddServicePageProps
-> = async () => {
-  const doctors = await prisma.doctors.findMany();
+> = async (ctx: GetServerSidePropsContext) => {
+  getInitialProps(ctx, [Rights.ADMIN, Rights.DOCTOR]);
+
+  let login;
+  if (ctx.req?.headers.cookie) {
+    const parsedCookies = cookie.parse(ctx.req?.headers.cookie);
+
+    const decodedCookie = decode(parsedCookies.auth) as {
+      login: string;
+      password: string;
+      rights_id: number;
+    };
+
+    login = decodedCookie.login;
+  }
   const services = await prisma.services.findMany();
 
   return {
     props: {
-      doctors: doctors.map(doctor => ({
-        name: doctorToString(doctor),
-        id: doctor.id
-      })),
+      login: login || '',
       services: services.map(service => ({
         title: service.title,
         id: service.id
@@ -51,17 +67,20 @@ export const getServerSideProps: GetServerSideProps<
 };
 
 export default function DoctorAddService({
-  doctors,
+  login,
   services
 }: IDoctorsAddServicePageProps) {
   const [formData, setFormData] = useState<IDoctorAddServiceForm>(
     {} as IDoctorAddServiceForm
   );
+  const [user, setUser] = useState(undefined as users | undefined);
+  const [doctor, setDoctor] = useState(undefined as doctors | undefined);
+
   const addMutation = useMutation(addRenderedService);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-
+    formData.doctorId = doctor?.id.toString() || '-1';
     addMutation.mutate(formData);
 
     setTimeout(() => {
@@ -76,6 +95,24 @@ export default function DoctorAddService({
 
   if (addMutation.isSuccess) return <Success message="Успешно!"></Success>;
 
+  if (!user && login) {
+    getUser(login).then(res => {
+      setUser && setUser(res);
+    });
+  }
+
+  if (!doctor && login) {
+    getDoctorByUserLogin(login).then(
+      (
+        doctor: users_doctors & {
+          doctors: doctors;
+        }
+      ) => {
+        setDoctor && setDoctor(doctor.doctors);
+      }
+    );
+  }
+
   return (
     <section className="py-5 container mx-auto">
       <Head>
@@ -84,8 +121,16 @@ export default function DoctorAddService({
       <h2 className="text-xl md:text-5xl text-center font-bold py-10">
         Учёт оказанной услуги
       </h2>
-
-      <form className="grid lg:grid-cols-2 w-2/3 gap-4" onSubmit={handleSubmit}>
+      <Logout></Logout>
+      <div className="py-5 gap-2 flex flex-col">
+        <h3 className="text-left font-bold">
+          <p>Вы вошли как: {login}</p>
+        </h3>
+        <h3 className="text-left font-bold">
+          {doctor && `Оказывает услугу: ${doctorToString(doctor)}`}
+        </h3>
+      </div>
+      <form className="grid w-2/3 gap-4" onSubmit={handleSubmit}>
         <div className="input-type hidden">
           <input
             type="number"
@@ -94,35 +139,6 @@ export default function DoctorAddService({
             className="border w-full px-5 py-3 focus:outline-none rounded-md"
           />
         </div>
-        <div className="container flex justify-between py-5 flex-col gap-2 w-96">
-          <h3>Выберите врача: </h3>
-          <select
-            className="border w-full px-5 py-3 focus:outline-none rounded-md"
-            name="doctorId"
-            id="doctorId"
-            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-              setFormData &&
-                setFormData(
-                  Object.assign(formData, {
-                    doctorId:
-                      event.target[event.target.selectedIndex].getAttribute(
-                        'data-id'
-                      )
-                  })
-                );
-            }}
-          >
-            <option data-id={-1}>-</option>
-            {doctors?.map((doctor, index) => {
-              return (
-                <option key={index} data-id={doctor.id}>
-                  {doctor.name}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-
         <div className="container flex justify-between py-5 flex-col gap-2 w-96">
           <h3>Выберите услугу: </h3>
           <select
@@ -172,20 +188,22 @@ export default function DoctorAddService({
 
         <div className="container flex justify-between py-5 flex-col gap-2 w-96">
           <h3>Результат оказания услуги: </h3>
-          <textarea
-            className="border w-full px-5 py-3 focus:outline-none rounded-md
-            h-20 resize-x"
-            name="result"
-            id="result"
-            onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
-              setFormData &&
-                setFormData(
-                  Object.assign(formData, {
-                    result: event.target.value
-                  })
-                );
-            }}
-          ></textarea>
+          <div className="h-20">
+            <textarea
+              className="border w-full px-5 py-3 focus:outline-none rounded-md
+            h-20 min-h-full max-h-80"
+              name="result"
+              id="result"
+              onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
+                setFormData &&
+                  setFormData(
+                    Object.assign(formData, {
+                      result: event.target.value
+                    })
+                  );
+              }}
+            ></textarea>
+          </div>
         </div>
 
         <button

@@ -1,7 +1,34 @@
-import { UserData } from '../../prisma/controllers/usersController';
+import { rights } from '@prisma/client';
+import {
+  UserData,
+  UsersJoined
+} from '../../prisma/controllers/usersController';
 import { parseIntIfValueIsString } from '../parseIntIfValueIsString';
 
-export const getUsers = async (): Promise<UserData[]> => {
+export const getDoctorUsers = async (): Promise<UsersJoined[]> => {
+  const options = {
+    method: 'POST'
+  };
+
+  return await (
+    await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}api/users/getDoctorUsers`,
+      options
+    )
+  ).json();
+};
+
+export const getRights = async (): Promise<rights[]> => {
+  const options = {
+    method: 'POST'
+  };
+
+  return await (
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}api/rights/get`, options)
+  ).json();
+};
+
+export const getUsers = async (): Promise<UsersJoined[]> => {
   const options = {
     method: 'POST'
   };
@@ -13,7 +40,7 @@ export const getUsers = async (): Promise<UserData[]> => {
 
 export const getUser = async (
   userLogin: string
-): Promise<UserData | undefined> => {
+): Promise<UsersJoined | undefined> => {
   if (!userLogin) return undefined;
 
   return await (

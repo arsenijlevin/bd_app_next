@@ -1,6 +1,7 @@
-import { ChangeEvent, FormEvent, useContext } from 'react';
+import { rights } from '@prisma/client';
+import { ChangeEvent, FormEvent, useContext, useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
-import { addUser, getUsers } from '../../lib/users/helpers';
+import { addUser, getRights, getUsers } from '../../lib/users/helpers';
 import { KeyUsersContext } from '../../pages/database-viewer/users';
 import { UserData } from '../../prisma/controllers/usersController';
 
@@ -10,6 +11,13 @@ import Success from '../utility/Success';
 
 export default function AddDataForm() {
   const { formData, setFormData } = useContext(KeyUsersContext);
+  const [availableRights, setAvailableRights] = useState([] as rights[]);
+
+  if (availableRights.length === 0) {
+    getRights().then(res => {
+      setAvailableRights && setAvailableRights(res);
+    });
+  }
 
   const queryClient = useQueryClient();
 
@@ -54,7 +62,7 @@ export default function AddDataForm() {
       </div>
       <div className="input-type">
         <input
-          type="text"
+          type="password"
           onChange={(event: ChangeEvent<HTMLInputElement>) => {
             setFormData &&
               setFormData(
@@ -81,18 +89,31 @@ export default function AddDataForm() {
         />
       </div>
       <div className="input-type">
-        <input
-          type="number"
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+        <select
+          name="rights_id"
+          id="rights_id"
+          className="border w-full px-5 py-3 focus:outline-none rounded-md"
+          onChange={(event: ChangeEvent<HTMLSelectElement>) => {
             setFormData &&
               setFormData(
-                Object.assign(formData, { rights_id: event.target.value })
+                Object.assign(formData, {
+                  rights_id:
+                    event.target[event.target.selectedIndex].getAttribute(
+                      'data-id'
+                    )
+                })
               );
           }}
-          name="rights_id"
-          placeholder="Права"
-          className="border w-full px-5 py-3 focus:outline-none rounded-md"
-        />
+        >
+          {availableRights.map((right, index) => {
+            return (
+              <option
+                key={index}
+                data-id={right.id}
+              >{`(${right.id}) ${right.title}`}</option>
+            );
+          })}
+        </select>
       </div>
       <button
         type="submit"

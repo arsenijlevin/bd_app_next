@@ -13,6 +13,11 @@ import { useQueryOptions } from '../../lib/useQueryOptions';
 import { UserData } from '../../prisma/controllers/usersController';
 import Head from 'next/head';
 
+import { getInitialProps, Rights } from '../../lib/auth/helpers';
+import { NextPageContext } from 'next';
+import Logout from '../../components/auth/Logout';
+import BackButton from '../../components/utility/BackButton';
+
 interface IDeleteComponent {
   deleteHandler: () => void;
   cancleHandler: () => void;
@@ -44,6 +49,9 @@ export const KeyUsersContext = createContext<{
   formData: {} as UserData,
   deleteKey: ''
 });
+
+DatabaseViewerUsers.getInitialProps = (ctx: NextPageContext) =>
+  getInitialProps(ctx, [Rights.ADMIN]);
 
 export default function DatabaseViewerUsers() {
   const queryClient = useQueryClient();
@@ -88,7 +96,7 @@ export default function DatabaseViewerUsers() {
   };
 
   return (
-    <section className="py-5">
+    <section className="py-5 container mx-auto">
       <Head>
         <title>Пользователи</title>
       </Head>
@@ -110,6 +118,10 @@ export default function DatabaseViewerUsers() {
           setDeleteKey
         }}
       >
+        <div className="left flex gap-3">
+          <Logout></Logout>
+        </div>
+        <BackButton link="/database-viewer"></BackButton>
         <div className="container mx-auto flex justify-between py-5 border-b">
           <div className="left flex gap-3">
             <button
@@ -129,7 +141,7 @@ export default function DatabaseViewerUsers() {
           )}
         </div>
 
-        <div className="h-60 min-w-full">
+        <div className="min-w-full">
           <Form></Form>
         </div>
         <div className="container mx-auto">

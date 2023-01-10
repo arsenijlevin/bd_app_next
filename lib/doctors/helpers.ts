@@ -1,8 +1,66 @@
-import { doctors, patients, Prisma } from '@prisma/client';
-import { DoctorData } from '../../prisma/controllers/doctorsController';
+import {
+  departments,
+  doctors,
+  patients,
+  Prisma,
+  specialties,
+  users_doctors
+} from '@prisma/client';
+import { DoctorFormData } from '../../pages/database-viewer/doctors';
+import {
+  DoctorData,
+  DoctorsJoined
+} from '../../prisma/controllers/doctorsController';
 import { parseIntIfValueIsString } from '../parseIntIfValueIsString';
 
-export const getDoctors = async (): Promise<DoctorData[]> => {
+export const getDepartments = async (): Promise<departments[]> => {
+  const options = {
+    method: 'POST'
+  };
+
+  return await (
+    await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}api/departments/get`,
+      options
+    )
+  ).json();
+};
+
+export const getSpecialties = async (): Promise<specialties[]> => {
+  const options = {
+    method: 'POST'
+  };
+
+  return await (
+    await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}api/specialties/get`,
+      options
+    )
+  ).json();
+};
+
+export const getDoctorByUserLogin = async (
+  userLogin: string
+): Promise<
+  users_doctors & {
+    doctors: doctors;
+  }
+> => {
+  return await (
+    await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}api/doctors/getDoctorByUserLogin`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: `{
+        "userLogin": "${userLogin}"
+      }`
+      }
+    )
+  ).json();
+};
+
+export const getDoctors = async (): Promise<DoctorsJoined[]> => {
   const options = {
     method: 'POST'
   };
@@ -17,7 +75,7 @@ export const getDoctors = async (): Promise<DoctorData[]> => {
 
 export const getDoctor = async (
   doctorId: number
-): Promise<DoctorData | undefined> => {
+): Promise<DoctorFormData | undefined> => {
   if (!doctorId) return undefined;
 
   return await (
@@ -31,8 +89,8 @@ export const getDoctor = async (
   ).json();
 };
 
-export const addDoctor = async (formData: DoctorData) => {
-  const data: DoctorData = {
+export const addDoctor = async (formData: DoctorFormData) => {
+  const data: DoctorFormData = {
     id: parseIntIfValueIsString(formData.id),
     specialty_id: parseIntIfValueIsString(formData.specialty_id),
     department_id: parseIntIfValueIsString(formData.department_id),
@@ -41,7 +99,8 @@ export const addDoctor = async (formData: DoctorData) => {
     ),
     name: formData.name,
     surname: formData.surname,
-    patronymic: formData.patronymic
+    patronymic: formData.patronymic,
+    doctor_user_login: formData.doctor_user_login
   };
 
   const options = {

@@ -1,10 +1,14 @@
 import { DateTime } from 'luxon';
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import { ChangeEvent, FormEvent, useState } from 'react';
+import Select from 'react-select';
 import ServicesInfo from '../../components/accountant/ServicesInfo';
 import Table from '../../components/accountant/Table';
-import { getServicesByDateAndDoctor } from '../../lib/accountant/services';
+import Logout from '../../components/auth/Logout';
+import BackButton from '../../components/utility/BackButton';
+import { getServicesByDateAndDoctors } from '../../lib/accountant/services';
+import { getInitialProps, Rights } from '../../lib/auth/helpers';
 import { doctorToString } from '../../lib/doctors/helpers';
 import { renderedServicesJoined } from '../../prisma/controllers/accountantController';
 import { prisma } from '../../prisma/db';
@@ -16,9 +20,16 @@ interface IAccountantDoctorsPageProps {
   }[];
 }
 
+interface DoctorOption {
+  value: number;
+  label: string;
+}
+
 export const getServerSideProps: GetServerSideProps<
   IAccountantDoctorsPageProps
-> = async () => {
+> = async (ctx: GetServerSidePropsContext) => {
+  getInitialProps(ctx, [Rights.ADMIN, Rights.ACCOUNTANT]);
+
   const doctors = await prisma.doctors.findMany();
 
   return {
@@ -31,32 +42,48 @@ export const getServerSideProps: GetServerSideProps<
   };
 };
 
-export default function Accountant({ doctors }: IAccountantDoctorsPageProps) {
+export default function AccountantDoctors({
+  doctors
+}: IAccountantDoctorsPageProps) {
   const [formData, setFormData] = useState({
     date: DateTime.now().toFormat('yyyy-MM'),
-    doctorId: -1
+    doctorIds: [] as number[]
   });
   const [servicesData, setServicesData] = useState(
     [] as renderedServicesJoined[]
   );
 
+  const optionList = doctors.map(doctor => {
+    return {
+      value: doctor.id,
+      label: doctor.name
+    };
+  });
+
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
     setServicesData(
-      await getServicesByDateAndDoctor(formData.date, formData.doctorId)
+      await getServicesByDateAndDoctors(formData.date, formData.doctorIds)
     );
+  };
+
+  const handleSelect = (option: readonly DoctorOption[]) => {
+    formData.doctorIds = option.map(opt => opt.value);
   };
 
   return (
     <section className="py-5 container mx-auto">
       <Head>
-        <title>Генерация отчётов - врачи</title>
+        <title>Генерация отчётов - по врачам</title>
       </Head>
       <h2 className="text-xl md:text-5xl text-center font-bold py-10">
-        Генерация отчётов
+        Генерация отчётов - по врачам
       </h2>
-
+      <div className="left flex gap-3">
+        <Logout></Logout>
+      </div>
+      <BackButton link="/accountant"></BackButton>
       <form onSubmit={onSubmit}>
         <div className="container flex justify-between py-5 flex-col gap-2 w-96">
           <h3>Выберите дату: </h3>
@@ -76,31 +103,14 @@ export default function Accountant({ doctors }: IAccountantDoctorsPageProps) {
           />
         </div>
         <div className="container flex justify-between py-5 flex-col gap-2 w-96">
-          <h3>Выберите врача: </h3>
-          <select
-            name="doctorId"
-            id="doctorId"
-            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-              setFormData &&
-                setFormData(
-                  Object.assign(formData, {
-                    doctorId:
-                      event.target[event.target.selectedIndex].getAttribute(
-                        'data-id'
-                      )
-                  })
-                );
-            }}
-          >
-            <option data-id={-1}>-</option>
-            {doctors?.map((doctor, index) => {
-              return (
-                <option key={index} data-id={doctor.id}>
-                  {doctor.name}
-                </option>
-              );
-            })}
-          </select>
+          <Select
+            options={optionList}
+            placeholder="Врачи"
+            isMulti
+            onChange={handleSelect}
+            isSearchable={true}
+            noOptionsMessage={() => 'Не найдено'}
+          />
         </div>
         <div className="container mx-auto flex justify-between py-5 flex-col gap-2">
           <button
@@ -119,7 +129,7 @@ export default function Accountant({ doctors }: IAccountantDoctorsPageProps) {
       <div className="container mx-auto flex justify-between py-5 flex-col gap-2">
         <h3>Результат: </h3>
 
-        {servicesData.length > 0 && formData.doctorId !== -1 && (
+        {servicesData.length > 0 && formData.doctorIds.length > 0 ? (
           <Table
             headers={[
               'Дата и время',
@@ -131,6 +141,8 @@ export default function Accountant({ doctors }: IAccountantDoctorsPageProps) {
             ]}
             data={servicesData}
           ></Table>
+        ) : (
+          <p>По запросу не найдено ни одной записи</p>
         )}
       </div>
     </section>

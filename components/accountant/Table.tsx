@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import ReactPaginate from 'react-paginate';
 import { doctorToString, patientToString } from '../../lib/doctors/helpers';
 import { renderedServicesJoined } from '../../prisma/controllers/accountantController';
 
@@ -11,15 +13,50 @@ interface ITableHeaderProps {
 }
 
 export default function Table({ headers, data }: ITableProps) {
+  const itemsPerPage = 5;
+  const [currentItems, setCurrentItems] = useState(
+    [] as renderedServicesJoined[]
+  );
+  const [pageCount, setPageCount] = useState(0);
+  const [itemOffset, setItemOffset] = useState(0);
+
+  useEffect(() => {
+    const endOffset = itemOffset + itemsPerPage;
+
+    setCurrentItems(data.slice(itemOffset, endOffset));
+    setPageCount(Math.ceil(data.length / itemsPerPage));
+  }, [data, itemOffset, itemsPerPage]);
+
+  const handlePageClick = (event: { selected: number }) => {
+    const newOffset = (event.selected * itemsPerPage) % data.length;
+
+    setItemOffset(newOffset);
+  };
+
   return (
-    <table className="min-w-full table-auto border border-slate-400">
-      <TableHeader headers={headers}></TableHeader>
-      <tbody className="bg-gray-200">
-        {data.map((object: renderedServicesJoined, index: number) => (
-          <TableRow key={index} {...object} />
-        ))}
-      </tbody>
-    </table>
+    <>
+      <ReactPaginate
+        nextLabel=">"
+        onPageChange={handlePageClick}
+        pageRangeDisplayed={3}
+        marginPagesDisplayed={1}
+        pageCount={pageCount}
+        previousLabel="<"
+        breakLabel="..."
+        containerClassName="pagination flex flex-row gap-2 text-lg max-w-32 w-32"
+        activeClassName="font-bold"
+        nextLinkClassName="pl-5"
+        previousLinkClassName="pr-5"
+      />
+      <table className="min-w-full table-auto border border-slate-400">
+        <TableHeader headers={headers}></TableHeader>
+        <tbody className="bg-gray-200">
+          {currentItems.map((object: renderedServicesJoined, index: number) => (
+            <TableRow key={index} {...object} />
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 }
 
@@ -28,7 +65,7 @@ function TableHeader({ headers }: ITableHeaderProps) {
     <thead>
       <tr className="bg-gray-800 border-slate-600">
         {headers.map((header: string, index: number) => (
-          <th className="px-16 py-2 border border-slate-600" key={index}>
+          <th className="px-2 py-2 border border-slate-600" key={index}>
             <span className="text-gray-200">{header}</span>
           </th>
         ))}

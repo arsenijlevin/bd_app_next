@@ -22,24 +22,24 @@ export const getServicesByDate = async (
   ).json();
 };
 
-export const getServicesByDateAndDepartment = async (
+export const getServicesByDateAndDepartments = async (
   date: string,
-  departmentId: number
+  departmentIds: number[]
 ): Promise<renderedServicesJoined[]> => {
-  if (!date || !departmentId) return [];
+  if (!date || departmentIds.length === 0) return [];
 
   const options = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       date: date,
-      departmentId: departmentId
+      departmentIds: departmentIds
     })
   };
 
   const renderedServices: renderedServicesJoined[] = await (
     await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}api/accountant/getServicesByDateAndDepartment`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}api/accountant/getServicesByDateAndDepartments`,
       options
     )
   ).json();
@@ -52,24 +52,24 @@ export const getServicesByDateAndDepartment = async (
   });
 };
 
-export const getServicesByDateAndDoctor = async (
+export const getServicesByDateAndDoctors = async (
   date: string,
-  doctorId: number
+  doctorIds: number[]
 ): Promise<renderedServicesJoined[]> => {
-  if (!date || !doctorId) return [];
+  if (!date || doctorIds.length === 0) return [];
 
   const options = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       date: date,
-      doctorId: doctorId
+      doctorIds: doctorIds
     })
   };
 
   const renderedServices: renderedServicesJoined[] = await (
     await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}api/accountant/getServicesByDateAndDoctor`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}api/accountant/getServicesByDateAndDoctors`,
       options
     )
   ).json();
