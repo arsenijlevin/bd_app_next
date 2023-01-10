@@ -3,8 +3,10 @@ import {
   doctors,
   patients,
   Prisma,
-  specialties
+  specialties,
+  users_doctors
 } from '@prisma/client';
+import { DoctorFormData } from '../../pages/database-viewer/doctors';
 import {
   DoctorData,
   DoctorsJoined
@@ -37,6 +39,27 @@ export const getSpecialties = async (): Promise<specialties[]> => {
   ).json();
 };
 
+export const getDoctorByUserLogin = async (
+  userLogin: string
+): Promise<
+  users_doctors & {
+    doctors: doctors;
+  }
+> => {
+  return await (
+    await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}api/doctors/getDoctorByUserLogin`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: `{
+        "userLogin": "${userLogin}"
+      }`
+      }
+    )
+  ).json();
+};
+
 export const getDoctors = async (): Promise<DoctorsJoined[]> => {
   const options = {
     method: 'POST'
@@ -52,7 +75,7 @@ export const getDoctors = async (): Promise<DoctorsJoined[]> => {
 
 export const getDoctor = async (
   doctorId: number
-): Promise<DoctorsJoined | undefined> => {
+): Promise<DoctorFormData | undefined> => {
   if (!doctorId) return undefined;
 
   return await (
@@ -66,8 +89,8 @@ export const getDoctor = async (
   ).json();
 };
 
-export const addDoctor = async (formData: DoctorData) => {
-  const data: DoctorData = {
+export const addDoctor = async (formData: DoctorFormData) => {
+  const data: DoctorFormData = {
     id: parseIntIfValueIsString(formData.id),
     specialty_id: parseIntIfValueIsString(formData.specialty_id),
     department_id: parseIntIfValueIsString(formData.department_id),
@@ -76,7 +99,8 @@ export const addDoctor = async (formData: DoctorData) => {
     ),
     name: formData.name,
     surname: formData.surname,
-    patronymic: formData.patronymic
+    patronymic: formData.patronymic,
+    doctor_user_login: formData.doctor_user_login
   };
 
   const options = {

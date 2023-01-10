@@ -15,6 +15,29 @@ export type DoctorsJoined = Prisma.doctorsGetPayload<{
   include: typeof doctorsInclude;
 }>;
 
+export async function getDoctorByUserLogin(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  try {
+    const { userLogin } = req.body;
+    const doctor = await prisma.users_doctors.findFirst({
+      where: {
+        user_login: userLogin
+      },
+      include: {
+        doctors: true
+      }
+    });
+
+    if (!doctor) return res.status(404).json({ error: 'Not found' });
+
+    return res.status(200).json(doctor);
+  } catch (error) {
+    throw new Error('500');
+  }
+}
+
 export async function getDoctors(req: NextApiRequest, res: NextApiResponse) {
   try {
     const doctors: DoctorsJoined[] = await prisma.doctors.findMany({
@@ -34,17 +57,34 @@ export async function getDoctors(req: NextApiRequest, res: NextApiResponse) {
 
 export async function addDoctors(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const formData: DoctorData = req.body;
+    const formData: DoctorData & {
+      doctor_user_login: string;
+    } = req.body;
 
     if (!formData) {
       return res.status(404).json({ error: 'Data is not provided' });
     }
 
     const doctor = await prisma.doctors.create({
-      data: formData
+      data: {
+        id: formData.id,
+        specialty_id: formData.specialty_id,
+        department_id: formData.department_id,
+        salary: formData.salary,
+        name: formData.name,
+        surname: formData.surname,
+        patronymic: formData.patronymic
+      }
     });
 
-    return res.status(200).json({ doctor: doctor });
+    const user_doctor = await prisma.users_doctors.create({
+      data: {
+        doctor_id: doctor.id,
+        user_login: formData.doctor_user_login
+      }
+    });
+
+    return res.status(200).json({ doctor: doctor, user_doctor: user_doctor });
   } catch (error) {
     throw new Error('500');
   }

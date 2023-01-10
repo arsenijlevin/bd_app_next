@@ -1,4 +1,4 @@
-import { departments, specialties } from '@prisma/client';
+import { departments, specialties, users } from '@prisma/client';
 import { ChangeEvent, FormEvent, useContext, useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import {
@@ -7,8 +7,11 @@ import {
   getDoctors,
   getSpecialties
 } from '../../lib/doctors/helpers';
-import { KeyDoctorsContext } from '../../pages/database-viewer/doctors';
-import { DoctorData } from '../../prisma/controllers/doctorsController';
+import { getDoctorUsers } from '../../lib/users/helpers';
+import {
+  DoctorFormData,
+  KeyDoctorsContext
+} from '../../pages/database-viewer/doctors';
 
 import Error from '../utility/Error';
 import Loading from '../utility/Loading';
@@ -18,6 +21,7 @@ export default function AddDataForm() {
   const { formData, setFormData } = useContext(KeyDoctorsContext);
   const [specialties, setSpecialties] = useState([] as specialties[]);
   const [departments, setDepartments] = useState([] as departments[]);
+  const [doctorUsers, setDoctorUsers] = useState([] as users[]);
 
   const queryClient = useQueryClient();
 
@@ -34,7 +38,7 @@ export default function AddDataForm() {
 
     setTimeout(() => {
       addMutation.reset();
-      setFormData && setFormData({} as DoctorData);
+      setFormData && setFormData({} as DoctorFormData);
     }, 2000);
   };
 
@@ -53,6 +57,12 @@ export default function AddDataForm() {
   if (departments.length === 0) {
     getDepartments().then(deps => {
       setDepartments && setDepartments(deps);
+    });
+  }
+
+  if (doctorUsers.length === 0) {
+    getDoctorUsers().then(doctorUsers => {
+      setDoctorUsers && setDoctorUsers(doctorUsers);
     });
   }
 
@@ -175,6 +185,34 @@ export default function AddDataForm() {
           placeholder="Отчество"
           className="border w-full px-5 py-3 focus:outline-none rounded-md"
         />
+      </div>
+      <div className="input-type">
+        <select
+          name="doctor_user_login"
+          id="doctor_user_login"
+          className="border w-full px-5 py-3 focus:outline-none rounded-md"
+          onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+            setFormData &&
+              setFormData(
+                Object.assign(formData, {
+                  doctor_user_login:
+                    event.target[event.target.selectedIndex].getAttribute(
+                      'data-id'
+                    )
+                })
+              );
+          }}
+        >
+          <option data-id={-1}>-</option>
+          {doctorUsers.map((doctorUser, index) => {
+            return (
+              <option
+                key={index}
+                data-id={doctorUser.login}
+              >{`${doctorUser.login}`}</option>
+            );
+          })}
+        </select>
       </div>
       <button
         type="submit"

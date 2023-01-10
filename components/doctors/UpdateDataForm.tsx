@@ -1,4 +1,4 @@
-import { departments, specialties } from '@prisma/client';
+import { departments, specialties, users } from '@prisma/client';
 import { ChangeEvent, FormEvent, useContext, useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import {
@@ -7,7 +7,11 @@ import {
   getSpecialties,
   updateDoctor
 } from '../../lib/doctors/helpers';
-import { KeyDoctorsContext } from '../../pages/database-viewer/doctors';
+import { getDoctorUsers } from '../../lib/users/helpers';
+import {
+  DoctorFormData,
+  KeyDoctorsContext
+} from '../../pages/database-viewer/doctors';
 
 import { DoctorData } from '../../prisma/controllers/doctorsController';
 import Error from '../utility/Error';
@@ -22,6 +26,7 @@ export default function UpdateDataForm({ doctorToUpdate }: IUpdateForm) {
   const { formData, setFormData, setFormMode } = useContext(KeyDoctorsContext);
   const [specialties, setSpecialties] = useState([] as specialties[]);
   const [departments, setDepartments] = useState([] as departments[]);
+  const [doctorUsers, setDoctorUsers] = useState([] as users[]);
 
   const queryClient = useQueryClient();
 
@@ -49,7 +54,7 @@ export default function UpdateDataForm({ doctorToUpdate }: IUpdateForm) {
 
     setTimeout(() => {
       updateMutation.reset();
-      setFormData && setFormData({} as DoctorData);
+      setFormData && setFormData({} as DoctorFormData);
       setFormMode && setFormMode('add');
     }, 2000);
   };
@@ -72,6 +77,12 @@ export default function UpdateDataForm({ doctorToUpdate }: IUpdateForm) {
   if (departments.length === 0) {
     getDepartments().then(deps => {
       setDepartments && setDepartments(deps);
+    });
+  }
+
+  if (doctorUsers.length === 0) {
+    getDoctorUsers().then(doctorUsers => {
+      setDoctorUsers && setDoctorUsers(doctorUsers);
     });
   }
   return (

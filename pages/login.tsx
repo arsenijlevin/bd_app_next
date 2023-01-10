@@ -50,8 +50,6 @@ export default function Login() {
         }, 1500);
       }
     } catch (error) {
-      console.log(error);
-
       setIsError(true);
       setTimeout(() => {
         setIsError(false);

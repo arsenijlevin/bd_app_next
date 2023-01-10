@@ -17,6 +17,28 @@ export type UsersJoined = Prisma.usersGetPayload<{
   include: typeof usersInclude;
 }>;
 
+export async function getDoctorUsers(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  try {
+    const users = await prisma.users.findMany({
+      where: {
+        rights_id: 4
+      },
+      include: {
+        rights: true
+      }
+    });
+
+    if (!users) return res.status(404).json({ error: 'Not found' });
+
+    return res.status(200).json(users);
+  } catch (error) {
+    throw new Error('500');
+  }
+}
+
 export async function getUsers(req: NextApiRequest, res: NextApiResponse) {
   try {
     const users = await prisma.users.findMany({
@@ -78,8 +100,6 @@ export async function modifyUsers(req: NextApiRequest, res: NextApiResponse) {
       name: formData.name,
       rights_id: formData.rights_id
     };
-    console.log(formData.password);
-    console.log(user?.password);
 
     if (formData.password === user?.password) {
       delete data.password;
@@ -92,8 +112,6 @@ export async function modifyUsers(req: NextApiRequest, res: NextApiResponse) {
       },
       data: data
     });
-
-    console.log(data);
 
     return res.status(200).json({ user: user });
   } catch (error) {

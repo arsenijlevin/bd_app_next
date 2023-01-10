@@ -23,14 +23,18 @@ const TABLE_NAME = 'doctors';
 const FORM_MODE = 'add';
 const SEARCH_KEY = -1;
 
+export type DoctorFormData = DoctorData & {
+  doctor_user_login: string;
+};
+
 export const KeyDoctorsContext = createContext<{
   formMode: IFormMode;
   doctorKey: number;
   doctorToUpdate: DoctorData | undefined;
-  formData: DoctorData;
+  formData: DoctorFormData;
   deleteKey: number;
 
-  setFormData?: Dispatch<SetStateAction<DoctorData>>;
+  setFormData?: Dispatch<SetStateAction<DoctorFormData>>;
   setFormMode?: Dispatch<SetStateAction<IFormMode>>;
   setDoctorKey?: Dispatch<SetStateAction<number>>;
   setDoctorToUpdate?: Dispatch<SetStateAction<DoctorData | undefined>>;
@@ -39,7 +43,7 @@ export const KeyDoctorsContext = createContext<{
   formMode: FORM_MODE,
   doctorKey: SEARCH_KEY,
   doctorToUpdate: undefined,
-  formData: {} as DoctorData,
+  formData: {} as DoctorFormData,
   deleteKey: SEARCH_KEY
 });
 
@@ -54,7 +58,7 @@ export default function DatabaseViewerDoctors() {
   const [doctorToUpdate, setDoctorToUpdate] = useState<DoctorData | undefined>(
     undefined
   );
-  const [formData, setFormData] = useState({} as DoctorData);
+  const [formData, setFormData] = useState({} as DoctorFormData);
   const [deleteKey, setDeleteKey] = useState<number>(SEARCH_KEY);
 
   const { data, isLoading, isError } = useQuery(

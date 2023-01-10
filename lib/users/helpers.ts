@@ -5,6 +5,19 @@ import {
 } from '../../prisma/controllers/usersController';
 import { parseIntIfValueIsString } from '../parseIntIfValueIsString';
 
+export const getDoctorUsers = async (): Promise<UsersJoined[]> => {
+  const options = {
+    method: 'POST'
+  };
+
+  return await (
+    await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}api/users/getDoctorUsers`,
+      options
+    )
+  ).json();
+};
+
 export const getRights = async (): Promise<rights[]> => {
   const options = {
     method: 'POST'

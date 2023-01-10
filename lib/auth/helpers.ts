@@ -108,8 +108,6 @@ export const getInitialProps = async (
     rights_id: number;
   };
 
-  console.log(decodedCookie);
-
   if (!rights.includes(decodedCookie.rights_id) && !ctx.req) {
     Router.replace('/login');
     return {};
