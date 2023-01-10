@@ -121,7 +121,7 @@ export default function DatabaseViewerUsers() {
         <div className="left flex gap-3">
           <Logout></Logout>
         </div>
-        <BackButton link="/database-viewer"></BackButton>
+        <BackButton></BackButton>
         <div className="container mx-auto flex justify-between py-5 border-b">
           <div className="left flex gap-3">
             <button

@@ -86,7 +86,7 @@ export default function AccountantDepartments({
       <div className="left flex gap-3">
         <Logout></Logout>
       </div>
-      <BackButton link="/accountant"></BackButton>
+      <BackButton></BackButton>
 
       <form onSubmit={onSubmit}>
         <div className="container flex justify-between py-5 flex-col gap-2 w-96">

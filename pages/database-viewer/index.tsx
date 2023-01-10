@@ -38,6 +38,19 @@ function DatabaseViewer() {
           </li>
         </ul>
       </div>
+      <div className="container mx-auto flex justify-between py-5 border-b">
+        <h3>Создание отчётов: </h3>
+      </div>
+      <div className="container mx-auto flex justify-between py-5">
+        <ul>
+          <li>
+            <Link href="accountant/doctors">По врачам</Link>
+          </li>
+          <li>
+            <Link href="accountant/departments">По отделениям</Link>
+          </li>
+        </ul>
+      </div>
     </section>
   );
 }
