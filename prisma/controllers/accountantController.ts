@@ -101,12 +101,12 @@ export async function getServicesByDateAndDepartmentsHandler(
   }
 }
 
-export async function getServicesByDateAndDoctorHandler(
+export async function getServicesByDateAndDoctorsHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   try {
-    const { date, doctorId } = req.body;
+    const { date, doctorIds } = req.body;
 
     const gte = DateTime.fromFormat(date, 'yyyy-MM')
       .startOf('month')
@@ -124,7 +124,7 @@ export async function getServicesByDateAndDoctorHandler(
           gte: gte
         },
         doctors: {
-          id: parseInt(doctorId)
+          id: { in: doctorIds }
         }
       },
       include: {

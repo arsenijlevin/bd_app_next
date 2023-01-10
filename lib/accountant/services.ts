@@ -52,24 +52,24 @@ export const getServicesByDateAndDepartments = async (
   });
 };
 
-export const getServicesByDateAndDoctor = async (
+export const getServicesByDateAndDoctors = async (
   date: string,
-  doctorId: number
+  doctorIds: number[]
 ): Promise<renderedServicesJoined[]> => {
-  if (!date || !doctorId) return [];
+  if (!date || doctorIds.length === 0) return [];
 
   const options = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       date: date,
-      doctorId: doctorId
+      doctorIds: doctorIds
     })
   };
 
   const renderedServices: renderedServicesJoined[] = await (
     await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}api/accountant/getServicesByDateAndDoctor`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}api/accountant/getServicesByDateAndDoctors`,
       options
     )
   ).json();
