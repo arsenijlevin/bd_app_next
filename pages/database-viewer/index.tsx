@@ -33,6 +33,9 @@ function DatabaseViewer() {
           <li>
             <Link href="database-viewer/services">Услуги</Link>
           </li>
+          <li>
+            <Link href="database-viewer/departments">Отделения</Link>
+          </li>
         </ul>
       </div>
     </section>

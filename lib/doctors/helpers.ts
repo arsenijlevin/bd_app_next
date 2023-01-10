@@ -20,7 +20,7 @@ export const getDepartments = async (): Promise<departments[]> => {
 
   return await (
     await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}api/departments/get`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}api/departments/getAll`,
       options
     )
   ).json();

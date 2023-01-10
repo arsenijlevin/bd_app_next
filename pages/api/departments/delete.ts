@@ -1,12 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getDepartment } from '../../../prisma/controllers/departmentsController';
+import { deleteDepartments } from '../../../prisma/controllers/departmentsController';
 
-export default function get(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
+export default function deleteData(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'DELETE') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  return getDepartment(req, res)
+  return deleteDepartments(req, res)
     .catch(() => {
       res.status(500).json({ message: 'Unexpected error happened' });
     })
