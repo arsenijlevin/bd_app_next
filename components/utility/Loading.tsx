@@ -6,7 +6,7 @@ export default function Loading() {
       height={80}
       width={80}
       color="#4fa94d"
-      wrapperClass="h-auto w-auto absolute z-50 flex items-center justify-center margin-auto"
+      wrapperClass="flex items-center justify-center margin-auto"
       visible={true}
       ariaLabel="loading"
       secondaryColor="#4fa94d"
