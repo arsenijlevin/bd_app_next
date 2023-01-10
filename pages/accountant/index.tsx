@@ -9,7 +9,7 @@ Accountant.getInitialProps = (ctx: NextPageContext) =>
 
 export default function Accountant() {
   return (
-    <section className="py-5 container mx-auto">
+    <section className="py-5 px-10 container mx-auto">
       <Head>
         <title>Генерация отчётов</title>
       </Head>

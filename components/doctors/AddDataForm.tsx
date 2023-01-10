@@ -93,6 +93,7 @@ export default function AddDataForm() {
               );
           }}
         >
+          <option data-id={-1}>-</option>
           {specialties.map((spec, index) => {
             return (
               <option
@@ -120,6 +121,7 @@ export default function AddDataForm() {
               );
           }}
         >
+          <option data-id={-1}>-</option>
           {departments.map((department, index) => {
             return (
               <option

@@ -130,6 +130,7 @@ export default function UpdateDataForm({ userToUpdate }: IUpdateForm) {
                 );
             }}
           >
+            <option data-id={-1}>-</option>
             {availableRights.map((right, index) => {
               return (
                 <option

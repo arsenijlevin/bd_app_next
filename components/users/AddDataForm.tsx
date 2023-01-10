@@ -105,6 +105,7 @@ export default function AddDataForm() {
               );
           }}
         >
+          <option data-id={-1}>-</option>
           {availableRights.map((right, index) => {
             return (
               <option

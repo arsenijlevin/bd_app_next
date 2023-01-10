@@ -93,7 +93,7 @@ export default function DatabaseViewerDoctors() {
   };
 
   return (
-    <section className="py-5 container mx-auto">
+    <section className="py-5 px-10 container mx-auto">
       <Head>
         <title>Врачи</title>
       </Head>

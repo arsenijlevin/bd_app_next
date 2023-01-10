@@ -96,7 +96,7 @@ export default function DatabaseViewerUsers() {
   };
 
   return (
-    <section className="py-5 container mx-auto">
+    <section className="py-5 px-10 container mx-auto">
       <Head>
         <title>Пользователи</title>
       </Head>
