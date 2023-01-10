@@ -154,6 +154,9 @@ export const getUserHomePageByRights = (rights: Rights) => {
     case Rights.DOCTOR: {
       return 'doctor-add-service';
     }
+    case Rights.USER: {
+      return 'patients-add';
+    }
     default: {
       return '';
     }

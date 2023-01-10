@@ -13,7 +13,6 @@ import Head from 'next/head';
 import { getInitialProps, Rights } from '../../lib/auth/helpers';
 import { NextPageContext } from 'next';
 import Logout from '../../components/auth/Logout';
-import BackButton from '../../components/utility/BackButton';
 
 interface IDeleteComponent {
   deleteHandler: () => void;
@@ -40,7 +39,7 @@ export const KeyPatientsContext = createContext<{
 });
 
 DatabaseViewerPatients.getInitialProps = (ctx: NextPageContext) =>
-  getInitialProps(ctx, [Rights.ADMIN]);
+  getInitialProps(ctx, [Rights.ADMIN, Rights.USER]);
 
 export default function DatabaseViewerPatients() {
   const queryClient = useQueryClient();
@@ -95,7 +94,7 @@ export default function DatabaseViewerPatients() {
         <div className="left flex gap-3">
           <Logout></Logout>
         </div>
-        <BackButton link="/database-viewer"></BackButton>
+
         <div className="container mx-auto flex justify-between py-5 border-b">
           {deleteKey !== -1 ? (
             DeleteComponent({ deleteHandler, cancleHandler, deleteKey })
