@@ -43,7 +43,7 @@ export default function Table({ headers, data }: ITableProps) {
         pageCount={pageCount}
         previousLabel="<"
         breakLabel="..."
-        containerClassName="pagination flex flex-row gap-2 text-lg max-w-32 w-32"
+        containerClassName="pagination flex flex-row gap-2 text-lg max-w-32 w-32 select-none"
         activeClassName="font-bold"
         nextLinkClassName="pl-5"
         previousLinkClassName="pr-5"
