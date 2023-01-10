@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getServicesByDateAndDepartmentHandler } from '../../../prisma/controllers/accountantController';
+import { getServicesByDateAndDepartmentsHandler } from '../../../prisma/controllers/accountantController';
 
 export default function getServicesByDateAndDepartment(
   req: NextApiRequest,
@@ -9,7 +9,7 @@ export default function getServicesByDateAndDepartment(
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  return getServicesByDateAndDepartmentHandler(req, res)
+  return getServicesByDateAndDepartmentsHandler(req, res)
     .catch(() => {
       res.status(500).json({ message: 'Unexpected error happened' });
     })

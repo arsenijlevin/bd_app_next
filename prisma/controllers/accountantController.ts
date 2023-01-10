@@ -54,17 +54,20 @@ export async function getServicesByDateHandler(
   }
 }
 
-export async function getServicesByDateAndDepartmentHandler(
+export async function getServicesByDateAndDepartmentsHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   try {
-    const { date, departmentId } = req.body;
-
+    const { date, departmentIds } = req.body as {
+      date: string;
+      departmentIds: number[];
+    };
     const gte = DateTime.fromFormat(date, 'yyyy-MM')
       .startOf('month')
       .plus({ hours: 3 })
       .toJSDate();
+
     const lte = DateTime.fromFormat(date, 'yyyy-MM')
       .endOf('month')
       .plus({ hours: 3 })
@@ -77,7 +80,7 @@ export async function getServicesByDateAndDepartmentHandler(
           gte: gte
         },
         doctors: {
-          department_id: parseInt(departmentId)
+          department_id: { in: departmentIds }
         }
       },
       include: {

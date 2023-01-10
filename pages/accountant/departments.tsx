@@ -6,16 +6,22 @@ import ServicesInfo from '../../components/accountant/ServicesInfo';
 import Table from '../../components/accountant/Table';
 import Logout from '../../components/auth/Logout';
 import BackButton from '../../components/utility/BackButton';
-import { getServicesByDateAndDepartment } from '../../lib/accountant/services';
+import { getServicesByDateAndDepartments as getServicesByDateAndDepartments } from '../../lib/accountant/services';
 import { getInitialProps, Rights } from '../../lib/auth/helpers';
 import { renderedServicesJoined } from '../../prisma/controllers/accountantController';
 import { prisma } from '../../prisma/db';
+import Select from 'react-select';
 
 interface IAccountantDepartmentsPageProps {
   departments: {
     title: string;
     id: number;
   }[];
+}
+
+interface DepartmentOption {
+  value: number;
+  label: string;
 }
 
 export const getServerSideProps: GetServerSideProps<
@@ -40,18 +46,33 @@ export default function AccountantDepartments({
 }: IAccountantDepartmentsPageProps) {
   const [formData, setFormData] = useState({
     date: DateTime.now().toFormat('yyyy-MM'),
-    departmentId: -1
+    departmentIds: [] as number[]
   });
+
   const [servicesData, setServicesData] = useState(
     [] as renderedServicesJoined[]
   );
+
+  const optionList = departments.map(department => {
+    return {
+      value: department.id,
+      label: department.title
+    };
+  });
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
     setServicesData(
-      await getServicesByDateAndDepartment(formData.date, formData.departmentId)
+      await getServicesByDateAndDepartments(
+        formData.date,
+        formData.departmentIds
+      )
     );
+  };
+
+  const handleSelect = (option: readonly DepartmentOption[]) => {
+    formData.departmentIds = option.map(opt => opt.value);
   };
 
   return (
@@ -66,6 +87,7 @@ export default function AccountantDepartments({
         <Logout></Logout>
       </div>
       <BackButton link="/accountant"></BackButton>
+
       <form onSubmit={onSubmit}>
         <div className="container flex justify-between py-5 flex-col gap-2 w-96">
           <h3>Выберите дату: </h3>
@@ -86,31 +108,14 @@ export default function AccountantDepartments({
         </div>
 
         <div className="container flex justify-between py-5 flex-col gap-2 w-96">
-          <h3>Выберите отделение: </h3>
-          <select
-            name="departmentId"
-            id="departmentId"
-            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-              setFormData &&
-                setFormData(
-                  Object.assign(formData, {
-                    departmentId:
-                      event.target[event.target.selectedIndex].getAttribute(
-                        'data-id'
-                      )
-                  })
-                );
-            }}
-          >
-            <option data-id={-1}>-</option>
-            {departments?.map((department, index) => {
-              return (
-                <option key={index} data-id={department.id}>
-                  {department.title}
-                </option>
-              );
-            })}
-          </select>
+          <Select
+            options={optionList}
+            placeholder="Отделения"
+            isMulti
+            onChange={handleSelect}
+            isSearchable={true}
+            noOptionsMessage={() => 'Не найдено'}
+          />
         </div>
         <div className="container mx-auto flex justify-between py-5 flex-col gap-2">
           <button
